@@ -458,7 +458,3 @@ function declineRequest(sender){
 
 </body>
 </html>
-
-```
-
-</div>
