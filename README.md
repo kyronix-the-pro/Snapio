@@ -165,12 +165,13 @@
 
         .friend-card{
             background: #f8fafc;
+            border: 1px solid #e2e8f0;
             border-radius: 15px;
             padding: 20px;
             margin-top: 20px;
         }
 
-        /* FRIENDS GRID */
+        /* FRIENDS LIST */
         .friends-list-container {
             display: flex;
             flex-wrap: wrap;
@@ -252,7 +253,46 @@
             padding-top: 20px;
         }
 
-        .request-item{
+        /* SEARCH ROW UI MODIFICATIONS */
+        .search-result-row {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .add-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .add-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .add-btn.pending {
+            background: #cbd5e1;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        .request-item {
             background: white;
             border: 1px solid #ddd;
             padding: 15px;
@@ -418,8 +458,6 @@ const registerMessage = document.getElementById("registerMessage");
 const loginMessage = document.getElementById("loginMessage");
 
 const defaultPfp = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-
-// Temporary placeholder for custom file uploads
 let base64ImageStorage = "";
 
 function getUsers() {
@@ -452,6 +490,7 @@ function register(){
     let localUsers = getUsers();
 
     if(username === "" || password === ""){
+        registerMessage.style.color = "red";
         registerMessage.innerHTML = "Fill in all fields";
         return;
     }
@@ -459,6 +498,7 @@ function register(){
     const exists = localUsers.find(user => user.username.toLowerCase() === username.toLowerCase());
 
     if(exists){
+        registerMessage.style.color = "red";
         registerMessage.innerHTML = "Username already taken";
         return;
     }
@@ -520,7 +560,7 @@ function showFriendsPage(){
                 <input id="friendSearch" class="input" placeholder="Type username">
                 <button onclick="searchUser()">Search User</button>
             </div>
-            <div id="searchResult" style="margin-top: 15px;"></div>
+            <div id="searchResult"></div>
             
             <div class="request-box">
                 <h3>Requests: ${me.requests ? me.requests.length : 0}</h3>
@@ -559,24 +599,24 @@ function renderVisualFriends(me, localUsers) {
 }
 
 function searchUser(){
-    const username = document.getElementById("friendSearch").value.trim().toLowerCase();
+    const username = document.getElementById("friendSearch").value.trim();
     let localUsers = getUsers();
     const searchResult = document.getElementById("searchResult");
 
     if(!username) {
-        searchResult.innerHTML = "<p style='color: red;'>Please enter a name</p>";
+        searchResult.innerHTML = "<p style='color: red; margin-top: 10px;'>Please enter a name</p>";
         return;
     }
 
-    const foundUser = localUsers.find(u => u.username.toLowerCase() === username);
+    const foundUser = localUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
 
     if(!foundUser){
-        searchResult.innerHTML = "<p style='color: red;'>User not found</p>";
+        searchResult.innerHTML = "<p style='color: red; margin-top: 10px;'>User not found</p>";
         return;
     }
 
     if(foundUser.username.toLowerCase() === currentUser.username.toLowerCase()){
-        searchResult.innerHTML = "<p style='color: orange;'>You cannot add yourself</p>";
+        searchResult.innerHTML = "<p style='color: orange; margin-top: 10px;'>You cannot add yourself</p>";
         return;
     }
 
@@ -584,42 +624,49 @@ function searchUser(){
     if(!foundUser.friends) foundUser.friends = [];
 
     if(foundUser.friends.some(f => f.toLowerCase() === currentUser.username.toLowerCase())) {
-        searchResult.innerHTML = `<p style='color: green;'>You are already friends with ${foundUser.username}!</p>`;
+        searchResult.innerHTML = `<p style='color: green; margin-top: 10px;'>You are already friends with ${foundUser.username}!</p>`;
         return;
     }
 
+    const alreadySent = foundUser.requests.some(r => r.toLowerCase() === currentUser.username.toLowerCase());
+    const btnText = alreadySent ? "Pending" : "Add";
+    const btnClass = alreadySent ? "add-btn pending" : "add-btn";
+    const btnDisabled = alreadySent ? "disabled" : "";
+
+    // Exact layout: pfp, username, and add button floated straight right
     searchResult.innerHTML = `
-        <div class="request-item">
-            <span>Found User: <b>${foundUser.username}</b></span>
-            <button class="action-btn" onclick="sendRequest('${foundUser.username}')">Send Request</button>
+        <div class="search-result-row">
+            <div class="search-user-info">
+                <img class="pfp-circle" src="${foundUser.pfp || defaultPfp}" alt="pfp">
+                <span><b>${foundUser.username}</b></span>
+            </div>
+            <button id="addBtnElement" class="${btnClass}" ${btnDisabled} onclick="sendRequest('${foundUser.username}')">${btnText}</button>
         </div>
     `;
 }
 
 function sendRequest(targetUsername){
     let localUsers = getUsers();
-    const searchResult = document.getElementById("searchResult");
+    const addBtnElement = document.getElementById("addBtnElement");
     
     const targetUser = localUsers.find(u => u.username.toLowerCase() === targetUsername.toLowerCase());
 
-    if(!targetUser){
-        searchResult.innerHTML = "<p style='color: red;'>Error sending request.</p>";
-        return;
-    }
-
+    if(!targetUser) return;
     if(!targetUser.requests) targetUser.requests = [];
 
     const alreadySent = targetUser.requests.some(r => r.toLowerCase() === currentUser.username.toLowerCase());
 
-    if(alreadySent){
-        searchResult.innerHTML = `<p style='color: orange;'>Request already pending with ${targetUser.username}.</p>`;
-        return;
+    if(!alreadySent){
+        targetUser.requests.push(currentUser.username);
+        localStorage.setItem("snapio_users", JSON.stringify(localUsers));
     }
-
-    targetUser.requests.push(currentUser.username);
-    localStorage.setItem("snapio_users", JSON.stringify(localUsers));
     
-    searchResult.innerHTML = `<p style='color: green;'>Friend request sent to ${targetUser.username}!</p>`;
+    // UI transformation update immediately on interaction
+    if(addBtnElement) {
+        addBtnElement.innerText = "Pending";
+        addBtnElement.className = "add-btn pending";
+        addBtnElement.disabled = true;
+    }
 }
 
 function renderRequests(){
@@ -776,7 +823,6 @@ function applyProfileChanges() {
             return;
         }
 
-        // Rename across other profiles' databases
         localUsers.forEach(u => {
             if(u.friends) u.friends = u.friends.map(f => f.toLowerCase() === currentUser.username.toLowerCase() ? updatedName : f);
             if(u.requests) u.requests = u.requests.map(r => r.toLowerCase() === currentUser.username.toLowerCase() ? updatedName : r);
