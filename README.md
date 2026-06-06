@@ -1,16 +1,3 @@
-Here is the updated code. I have made the layout fully responsive by adding CSS media queries and modern layout techniques (like CSS Grid and Flexbox wrapping) so that everything looks clean and works well on mobile screens.
-
-### Mobile Optimization Changes
-
-* **Responsive Sidebar**: On mobile devices, the sidebar automatically transitions from a vertical left-hand drawer into a clean top-navigation menu.
-* **Flexible Sizing**: The landing, login, and registration card components now scale fluidly, matching smaller screen widths with comfortable touch targets.
-* **Stacking Friend Controls**: The user search layout and request action buttons cleanly stack vertically on narrow devices to maximize space.
-
----
-
-### The Updated Code
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -592,5 +579,3 @@ function declineRequest(sender){
 
 </body>
 </html>
-
-```
