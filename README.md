@@ -253,7 +253,7 @@
             padding-top: 20px;
         }
 
-        /* SEARCH ROW UI MODIFICATIONS */
+        /* SEARCH RESULT ROW DESIGN */
         .search-result-row {
             background: white;
             border: 1px solid #ddd;
@@ -323,7 +323,7 @@
             color: white;
         }
 
-        /* PROFILE */
+        /* PROFILE CONTAINER */
         .profile-container {
             max-width: 500px;
             background: #f8fafc;
@@ -608,6 +608,7 @@ function searchUser(){
         return;
     }
 
+    // Completely case-insensitive matching fallback logic
     const foundUser = localUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
 
     if(!foundUser){
@@ -633,7 +634,7 @@ function searchUser(){
     const btnClass = alreadySent ? "add-btn pending" : "add-btn";
     const btnDisabled = alreadySent ? "disabled" : "";
 
-    // Exact layout: pfp, username, and add button floated straight right
+    // Beautiful flex layouts mapping user info left and add action right
     searchResult.innerHTML = `
         <div class="search-result-row">
             <div class="search-user-info">
@@ -661,7 +662,7 @@ function sendRequest(targetUsername){
         localStorage.setItem("snapio_users", JSON.stringify(localUsers));
     }
     
-    // UI transformation update immediately on interaction
+    // Smooth element transition on interaction
     if(addBtnElement) {
         addBtnElement.innerText = "Pending";
         addBtnElement.className = "add-btn pending";
