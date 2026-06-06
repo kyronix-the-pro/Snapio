@@ -179,6 +179,36 @@
             font-weight: bold;
         }
 
+        /* REGION TOGGLE TABS */
+        .feed-filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #e2e8f0;
+            padding: 5px;
+            border-radius: 10px;
+            max-width: 400px;
+        }
+
+        .filter-tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            font-weight: bold;
+            color: #4b5563;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.2s;
+            font-size: 14px;
+        }
+
+        .filter-tab-btn.active {
+            background: white;
+            color: #2563eb;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
         /* POST MEDIA STYLES */
         .media-upload-box {
             max-width: 500px;
@@ -468,6 +498,27 @@ const defaultPfp = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 let base64ImageStorage = "";
 let base64PostMediaStorage = "";
 let postFileTypeStorage = ""; 
+let currentFeedScope = "global"; // "global" or "regional"
+
+// Helper function to dynamically pull user's regional configuration context
+function getUserCurrentRegion() {
+    try {
+        return Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown";
+    } catch(e) {
+        return "Unknown";
+    }
+}
+
+// Clean readable label context mapping
+function getCleanRegionLabel(timeZoneStr) {
+    if (timeZoneStr.includes("Amsterdam") || timeZoneStr.includes("Brussels") || timeZoneStr.includes("Berlin")) {
+        return "Netherlands / Europe Region";
+    }
+    if (timeZoneStr.includes("/")) {
+        return timeZoneStr.split("/")[1].replace("_", " ");
+    }
+    return timeZoneStr;
+}
 
 // Databases
 function getUsers() {
@@ -580,6 +631,7 @@ function openDashboard(){
 function showPostMediaPage() {
     base64PostMediaStorage = "";
     postFileTypeStorage = "";
+    const currentDetectedRegion = getUserCurrentRegion();
 
     contentArea.innerHTML = `
         <div class="page-title">Post Media</div>
@@ -603,6 +655,10 @@ function showPostMediaPage() {
                 <option value="friends">Friends Only (Visible to your friend list)</option>
                 <option value="private">Private (Only you can view)</option>
             </select>
+
+            <div style="margin-top: 15px; background: #e0f2fe; padding: 12px; border-radius: 8px; color: #0369a1; font-size:14px;">
+                📍 <b>Auto-tagged Location:</b> ${getCleanRegionLabel(currentDetectedRegion)}
+            </div>
 
             <button class="action-btn-styled" style="width: 100%; margin-top:25px; background:#10b981;" onclick="submitNewPost()">Publish Post</button>
             <div id="uploadError" style="margin-top:10px; color:red; text-align:center; font-weight:bold;"></div>
@@ -655,6 +711,7 @@ function submitNewPost() {
 
     let localPosts = getPosts();
     const uniquePostId = "post_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
+    const postRegionTag = getUserCurrentRegion();
 
     localPosts.push({
         id: uniquePostId,
@@ -663,6 +720,7 @@ function submitNewPost() {
         media: base64PostMediaStorage,
         type: postFileTypeStorage,
         visibility: visibility,
+        region: postRegionTag, // Attach country region signature context
         likes: [], 
         comments: [], 
         timestamp: Date.now()
@@ -672,12 +730,28 @@ function submitNewPost() {
     showForYouPage(); 
 }
 
-/* FOR YOU TAB */
+/* FOR YOU TAB WITH REGIONAL SCOPING FILTER */
 function showForYouPage() {
+    const myDetectedRegion = getUserCurrentRegion();
+    const cleanLabel = getCleanRegionLabel(myDetectedRegion);
+
     contentArea.innerHTML = `
         <div class="page-title">For You Feed</div>
+        
+        <div class="feed-filter-tabs">
+            <button id="tabBtnGlobal" class="filter-tab-btn ${currentFeedScope === 'global' ? 'active' : ''}" onclick="changeFeedScope('global')">Global Stream</button>
+            <button id="tabBtnRegional" class="filter-tab-btn ${currentFeedScope === 'regional' ? 'active' : ''}" onclick="changeFeedScope('regional')">📍 Only ${cleanLabel}</button>
+        </div>
+
         <div class="feed-container" id="feedPostsStream"></div>
     `;
+    renderFeedStream();
+}
+
+function changeFeedScope(newScope) {
+    currentFeedScope = newScope;
+    document.getElementById("tabBtnGlobal").classList.toggle("active", newScope === 'global');
+    document.getElementById("tabBtnRegional").classList.toggle("active", newScope === 'regional');
     renderFeedStream();
 }
 
@@ -688,10 +762,12 @@ function renderFeedStream() {
     let localPosts = getPosts();
     let localUsers = getUsers();
     let me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
+    const deviceRegion = getUserCurrentRegion();
 
     localPosts.sort((a, b) => b.timestamp - a.timestamp);
 
-    const visiblePosts = localPosts.filter(post => {
+    // Apply baseline privacy rules filtering logic first
+    let visiblePosts = localPosts.filter(post => {
         if (post.visibility === "public") return true;
         if (post.author.toLowerCase() === currentUser.username.toLowerCase()) return true;
         if (post.visibility === "friends") {
@@ -702,8 +778,16 @@ function renderFeedStream() {
         return false;
     });
 
+    // Layer regional matching constraint if requested
+    if (currentFeedScope === "regional") {
+        visiblePosts = visiblePosts.filter(post => {
+            // Check matching region properties or baseline fallbacks
+            return (post.region === deviceRegion || (!post.region && deviceRegion === "Europe/Amsterdam"));
+        });
+    }
+
     if (visiblePosts.length === 0) {
-        streamContainer.innerHTML = "<p style='text-align:center; color:#888; margin-top:40px;'>No shared posts found inside the system database yet.</p>";
+        streamContainer.innerHTML = `<p style='text-align:center; color:#888; margin-top:40px;'>No shared posts found matching this context view stream criteria inside the device storage.</p>`;
         return;
     }
 
@@ -732,6 +816,8 @@ function renderFeedStream() {
             });
         }
 
+        const displayRegion = post.region ? getCleanRegionLabel(post.region) : "Global Connection Area";
+
         cardElement.innerHTML = `
             <div class="post-header">
                 <div class="post-user-details" onclick="showTargetUserProfile('${post.author}')">
@@ -741,7 +827,10 @@ function renderFeedStream() {
                         <div style="font-size:12px; color:#888;">${post.title}</div>
                     </div>
                 </div>
-                <span style="font-size:12px; color: #94a3b8; text-transform: capitalize;">${post.visibility}</span>
+                <div style="text-align: right; font-size:11px; color: #94a3b8;">
+                    <div>📍 ${displayRegion}</div>
+                    <div style="text-transform: capitalize; margin-top:2px;">${post.visibility}</div>
+                </div>
             </div>
             
             ${mediaTag}
