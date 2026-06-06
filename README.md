@@ -126,6 +126,9 @@
             color: white;
             padding: 20px;
             flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .sidebar-logo{
@@ -137,6 +140,7 @@
         .sidebar-menu {
             display: flex;
             flex-direction: column;
+            flex: 1;
         }
 
         .sidebar-item{
@@ -149,6 +153,17 @@
 
         .sidebar-item:hover{
             background: #1f2937;
+        }
+
+        .logout-sidebar-btn {
+            background: #ef4444;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .logout-sidebar-btn:hover {
+            background: #dc2626;
         }
 
         .content{
@@ -375,6 +390,7 @@
                 justify-content: center;
                 gap: 8px;
                 width: 100%;
+                margin-bottom: 10px;
             }
 
             .sidebar-item {
@@ -423,12 +439,15 @@
 
 <div id="dashboard" class="hidden">
     <div class="sidebar">
-        <div class="sidebar-logo">SNAPIO</div>
-        <div class="sidebar-menu">
-            <div class="sidebar-item" onclick="showForYouPage()">For You</div>
-            <div class="sidebar-item" onclick="showPostMediaPage()">Post Media</div>
-            <div class="sidebar-item" onclick="showOwnProfile()">Profile</div>
+        <div>
+            <div class="sidebar-logo">SNAPIO</div>
+            <div class="sidebar-menu">
+                <div class="sidebar-item" onclick="showForYouPage()">For You</div>
+                <div class="sidebar-item" onclick="showPostMediaPage()">Post Media</div>
+                <div class="sidebar-item" onclick="showOwnProfile()">Profile</div>
+            </div>
         </div>
+        <div class="sidebar-item logout-sidebar-btn" onclick="logoutUser()">Switch Account</div>
     </div>
     <div class="content" id="contentArea">
         <h1>Welcome to SNAPIO</h1>
@@ -448,9 +467,9 @@ const loginMessage = document.getElementById("loginMessage");
 const defaultPfp = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 let base64ImageStorage = "";
 let base64PostMediaStorage = "";
-let postFileTypeStorage = ""; // "image" or "video"
+let postFileTypeStorage = ""; 
 
-// Core Databases initialization
+// Databases
 function getUsers() {
     return JSON.parse(localStorage.getItem("snapio_users")) || [];
 }
@@ -470,13 +489,28 @@ if(currentUser){
 }
 
 function showRegister(){
+    document.getElementById("registerUsername").value = "";
+    document.getElementById("registerPassword").value = "";
+    registerMessage.innerHTML = "";
     landingPage.classList.add("hidden");
+    loginPage.classList.add("hidden");
     registerPage.classList.remove("hidden");
 }
 
 function showLogin(){
+    document.getElementById("loginUsername").value = "";
+    document.getElementById("loginPassword").value = "";
+    loginMessage.innerHTML = "";
     landingPage.classList.add("hidden");
+    registerPage.classList.add("hidden");
     loginPage.classList.remove("hidden");
+}
+
+function logoutUser() {
+    localStorage.removeItem("snapio_currentUser");
+    currentUser = null;
+    dashboard.classList.add("hidden");
+    landingPage.classList.remove("hidden");
 }
 
 function register(){
@@ -505,8 +539,8 @@ function register(){
         pfp: defaultPfp,
         friends: [],
         requests: [],
-        followers: [],  // Usernames tracking followers
-        following: [],  // Usernames tracking who this user follows
+        followers: [],  
+        following: [],  
         likesReceived: 0
     });
 
@@ -524,6 +558,7 @@ function login(){
     const user = localUsers.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
 
     if(!user){
+        loginMessage.style.color = "red";
         loginMessage.innerHTML = "Invalid username or password";
         return;
     }
@@ -541,10 +576,7 @@ function openDashboard(){
     showForYouPage();
 }
 
-
-/* =========================================================
-   POST MEDIA TAB
-   ========================================================= */
+/* POST MEDIA TAB */
 function showPostMediaPage() {
     base64PostMediaStorage = "";
     postFileTypeStorage = "";
@@ -631,19 +663,16 @@ function submitNewPost() {
         media: base64PostMediaStorage,
         type: postFileTypeStorage,
         visibility: visibility,
-        likes: [], // Usernames of people who liked
-        comments: [], // Objects array: { commenter: 'name', text: 'message' }
+        likes: [], 
+        comments: [], 
         timestamp: Date.now()
     });
 
     localStorage.setItem("snapio_posts", JSON.stringify(localPosts));
-    showForYouPage(); // Direct redirect to live feed after broadcast
+    showForYouPage(); 
 }
 
-
-/* =========================================================
-   FOR YOU TAB (GLOBAL COMBINED STREAM FEED)
-   ========================================================= */
+/* FOR YOU TAB */
 function showForYouPage() {
     contentArea.innerHTML = `
         <div class="page-title">For You Feed</div>
@@ -660,15 +689,12 @@ function renderFeedStream() {
     let localUsers = getUsers();
     let me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
 
-    // Sort newer updates upwards
     localPosts.sort((a, b) => b.timestamp - a.timestamp);
 
-    // Context filter definitions parsing logic rules safely
     const visiblePosts = localPosts.filter(post => {
         if (post.visibility === "public") return true;
         if (post.author.toLowerCase() === currentUser.username.toLowerCase()) return true;
         if (post.visibility === "friends") {
-            // Check cross connected friendship array references safely
             if (me && me.friends && me.friends.some(f => f.toLowerCase() === post.author.toLowerCase())) {
                 return true;
             }
@@ -686,7 +712,7 @@ function renderFeedStream() {
         const authorObj = localUsers.find(u => u.username.toLowerCase() === post.author.toLowerCase());
         const authorPfp = (authorObj && authorObj.pfp) ? authorObj.pfp : defaultPfp;
         
-        const hasLiked = post.likes.some(u => u.toLowerCase() === currentUser.username.toLowerCase());
+        const hasLiked = post.likes && post.likes.some(u => u.toLowerCase() === currentUser.username.toLowerCase());
         const likeBtnClass = hasLiked ? "post-btn liked" : "post-btn";
 
         const cardElement = document.createElement("div");
@@ -699,7 +725,6 @@ function renderFeedStream() {
             mediaTag = `<img class="post-media-display" src="${post.media}" alt="Post Content">`;
         }
 
-        // Render Comment Strings Elements Block
         let commentsMarkup = "";
         if (post.comments && post.comments.length > 0) {
             post.comments.forEach(c => {
@@ -799,10 +824,7 @@ function recalculateTotalLikesReceived() {
     localStorage.setItem("snapio_users", JSON.stringify(localUsers));
 }
 
-
-/* =========================================================
-   PROFILE VIEW AND CUSTOMIZATION SECTION
-   ========================================================= */
+/* PROFILE TAB */
 function showOwnProfile() {
     recalculateTotalLikesReceived();
     let localUsers = getUsers();
@@ -813,7 +835,6 @@ function showOwnProfile() {
     const currentPfp = me.pfp || defaultPfp;
     const currentBio = me.bio || "No bio set yet.";
 
-    // Counts calculations
     const myOwnPosts = localPosts.filter(p => p.author.toLowerCase() === currentUser.username.toLowerCase());
     const totalPostsCount = myOwnPosts.length;
     const totalLikesCount = me.likesReceived || 0;
@@ -839,7 +860,6 @@ function showOwnProfile() {
         </div>
     `;
 
-    // Render personal uploads layout grid mapping inside profile cards
     const gridContainer = document.getElementById("profileGridContainer");
     if (myOwnPosts.length === 0) {
         gridContainer.innerHTML = "<p style='color:#888; grid-column: 1/-1; padding:20px;'>You haven't posted any media assets yet.</p>";
@@ -920,7 +940,6 @@ function applyProfileChanges() {
             return;
         }
 
-        // Migrate all posts authorship tracking records seamlessly
         localPosts.forEach(p => {
             if (p.author.toLowerCase() === currentUser.username.toLowerCase()) {
                 p.author = updatedName;
@@ -935,7 +954,6 @@ function applyProfileChanges() {
             }
         });
 
-        // Migrate global follower reference fields
         localUsers.forEach(u => {
             if (u.followers) u.followers = u.followers.map(x => x.toLowerCase() === currentUser.username.toLowerCase() ? updatedName : x);
             if (u.following) u.following = u.following.map(x => x.toLowerCase() === currentUser.username.toLowerCase() ? updatedName : x);
@@ -961,10 +979,7 @@ function applyProfileChanges() {
     }
 }
 
-
-/* =========================================================
-   EXTERNAL ACCESSIBLE PROFILES LOOKUP (VISITING OTHER USERS)
-   ========================================================= */
+/* EXTERNAL ACCESSIBLE PROFILES LOOKUP */
 function showTargetUserProfile(targetUsername) {
     if (targetUsername.toLowerCase() === currentUser.username.toLowerCase()) {
         showOwnProfile();
