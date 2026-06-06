@@ -139,6 +139,11 @@
             margin-bottom: 30px;
         }
 
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+        }
+
         .sidebar-item{
             padding: 15px;
             margin-top: 8px;
@@ -249,9 +254,8 @@
                 font-size: 28px;
             }
 
-            /* Turn items into a scrollable or wrapped row on small viewports */
             .sidebar-menu {
-                display: flex;
+                flex-direction: row;
                 flex-wrap: wrap;
                 justify-content: center;
                 gap: 8px;
@@ -445,7 +449,7 @@ function showFriendsPage(){
 }
 
 function searchUser(){
-    const username = document.getElementById("friendSearch").value.trim();
+    const username = document.getElementById("friendSearch").value.trim().toLowerCase();
     const latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
     const searchResult = document.getElementById("searchResult");
 
@@ -454,14 +458,14 @@ function searchUser(){
         return;
     }
 
-    const foundUser = latestUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
+    const foundUser = latestUsers.find(u => u.username.toLowerCase() === username);
 
     if(!foundUser){
         searchResult.innerHTML = "<p style='color: red;'>User not found</p>";
         return;
     }
 
-    if(foundUser.username === currentUser.username){
+    if(foundUser.username.toLowerCase() === currentUser.username.toLowerCase()){
         searchResult.innerHTML = "<p style='color: orange;'>You cannot add yourself</p>";
         return;
     }
@@ -469,7 +473,7 @@ function searchUser(){
     if(!foundUser.requests) foundUser.requests = [];
     if(!foundUser.friends) foundUser.friends = [];
 
-    if(foundUser.friends.includes(currentUser.username)) {
+    if(foundUser.friends.some(f => f.toLowerCase() === currentUser.username.toLowerCase())) {
         searchResult.innerHTML = `<p style='color: green;'>You are already friends with ${foundUser.username}!</p>`;
         return;
     }
