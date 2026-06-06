@@ -103,13 +103,14 @@
             margin-bottom: 25px;
         }
 
-        .input{
+        .input, .select{
             width: 100%;
             padding: 14px;
             margin-top: 10px;
             border: 1px solid #ddd;
             border-radius: 10px;
             font-size: 15px;
+            background: white;
         }
 
         /* DASHBOARD RESPONSIVE LAYOUT */
@@ -163,40 +164,110 @@
             font-weight: bold;
         }
 
-        .friend-card{
+        /* POST MEDIA STYLES */
+        .media-upload-box {
+            max-width: 500px;
             background: #f8fafc;
-            border: 1px solid #e2e8f0;
+            border: 2px dashed #cbd5e1;
             border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 15px;
         }
 
-        /* FRIENDS LIST */
-        .friends-list-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin: 15px 0 30px 0;
+        .preview-container-box {
+            max-width: 100%;
+            margin-top: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #e2e8f0;
         }
 
-        .friend-user-node {
+        .preview-container-box img, .preview-container-box video {
+            max-width: 100%;
+            max-height: 300px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* FEED / FEED POST STYLES */
+        .feed-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .post-card {
             background: white;
             border: 1px solid #e2e8f0;
-            padding: 10px 15px;
-            border-radius: 50px;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .post-user-details {
             display: flex;
             align-items: center;
             gap: 10px;
             cursor: pointer;
+        }
+
+        .post-media-display {
+            width: 100%;
+            border-radius: 12px;
+            background: #000;
+            max-height: 400px;
+            object-fit: contain;
+            margin-bottom: 12px;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .post-btn {
+            background: #f1f5f9;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
             transition: 0.2s;
         }
 
-        .friend-user-node:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            border-color: #2563eb;
+        .post-btn:hover {
+            background: #e2e8f0;
         }
 
+        .post-btn.liked {
+            background: #ef4444;
+            color: white;
+        }
+
+        .comment-section {
+            border-top: 1px solid #f1f5f9;
+            padding-top: 12px;
+        }
+
+        .comment-item {
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #374151;
+        }
+
+        /* USER DISPLAY STYLES */
         .pfp-circle {
             width: 40px;
             height: 40px;
@@ -214,17 +285,7 @@
             margin-bottom: 15px;
         }
 
-        .search-user{
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .search-user .input{
-            margin-top: 0;
-        }
-
-        .search-user button, .action-btn-styled {
+        .action-btn-styled {
             padding: 14px 20px;
             border: none;
             border-radius: 10px;
@@ -247,89 +308,13 @@
             margin-top: 8px;
         }
 
-        .request-box{
-            margin-top: 30px;
-            border-top: 2px dashed #e2e8f0;
-            padding-top: 20px;
-        }
-
-        /* SEARCH RESULT ROW DESIGN */
-        .search-result-row {
-            background: white;
-            border: 1px solid #ddd;
-            padding: 12px 20px;
-            border-radius: 12px;
-            margin-top: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .search-user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .add-btn {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .add-btn:hover {
-            background: #1d4ed8;
-        }
-
-        .add-btn.pending {
-            background: #cbd5e1;
-            color: #64748b;
-            cursor: not-allowed;
-        }
-
-        .request-item {
-            background: white;
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .request-item button {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-left: 5px;
-            font-weight: bold;
-        }
-
-        .request-item .action-btn {
-            background: #2563eb;
-            color: white;
-        }
-
-        .request-item .decline-btn {
-            background: #ef4444;
-            color: white;
-        }
-
-        /* PROFILE CONTAINER */
+        /* PROFILE SCREEN CONTROLS */
         .profile-container {
             max-width: 500px;
             background: #f8fafc;
             border-radius: 20px;
             padding: 30px;
-            margin-top: 25px;
+            margin: 25px auto 30px auto;
             text-align: center;
         }
 
@@ -337,6 +322,31 @@
             color: #4b5563;
             margin: 10px 0 20px 0;
             font-style: italic;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .profile-posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .grid-media-item {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            background: #000;
         }
 
         /* MOBILE MEDIA QUERIES */
@@ -377,26 +387,6 @@
             .content {
                 padding: 20px 15px;
             }
-
-            .search-user {
-                flex-direction: column;
-            }
-
-            .search-user button {
-                width: 100%;
-            }
-
-            .request-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .request-item div {
-                width: 100%;
-                display: flex;
-                justify-content: flex-end;
-                margin-top: 5px;
-            }
         }
     </style>
 </head>
@@ -435,11 +425,9 @@
     <div class="sidebar">
         <div class="sidebar-logo">SNAPIO</div>
         <div class="sidebar-menu">
-            <div class="sidebar-item" onclick="showFriendsPage()">Friends</div>
+            <div class="sidebar-item" onclick="showForYouPage()">For You</div>
+            <div class="sidebar-item" onclick="showPostMediaPage()">Post Media</div>
             <div class="sidebar-item" onclick="showOwnProfile()">Profile</div>
-            <div class="sidebar-item" onclick="alert('Chats coming soon!')">Chats</div>
-            <div class="sidebar-item" onclick="alert('For You coming soon!')">For You</div>
-            <div class="sidebar-item" onclick="alert('Post Media coming soon!')">Post Media</div>
         </div>
     </div>
     <div class="content" id="contentArea">
@@ -459,9 +447,16 @@ const loginMessage = document.getElementById("loginMessage");
 
 const defaultPfp = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 let base64ImageStorage = "";
+let base64PostMediaStorage = "";
+let postFileTypeStorage = ""; // "image" or "video"
 
+// Core Databases initialization
 function getUsers() {
     return JSON.parse(localStorage.getItem("snapio_users")) || [];
+}
+
+function getPosts() {
+    return JSON.parse(localStorage.getItem("snapio_posts")) || [];
 }
 
 function getCurrentUser() {
@@ -509,7 +504,10 @@ function register(){
         bio: "Hey there! I am using SNAPIO.",
         pfp: defaultPfp,
         friends: [],
-        requests: []
+        requests: [],
+        followers: [],  // Usernames tracking followers
+        following: [],  // Usernames tracking who this user follows
+        likesReceived: 0
     });
 
     localStorage.setItem("snapio_users", JSON.stringify(localUsers));
@@ -540,212 +538,286 @@ function openDashboard(){
     registerPage.classList.add("hidden");
     loginPage.classList.add("hidden");
     dashboard.classList.remove("hidden");
-    contentArea.innerHTML = `<h1>Welcome ${currentUser.username}</h1><p style='color: #666; margin-top:10px;'>Select an option from the menu to navigate.</p>`;
+    showForYouPage();
 }
 
-/* FRIENDS SECTION */
-function showFriendsPage(){
+
+/* =========================================================
+   POST MEDIA TAB
+   ========================================================= */
+function showPostMediaPage() {
+    base64PostMediaStorage = "";
+    postFileTypeStorage = "";
+
+    contentArea.innerHTML = `
+        <div class="page-title">Post Media</div>
+        <div style="max-width: 500px;">
+            <p style="color:#555; margin-bottom: 15px;">Upload photos or videos, configure availability rules, and broadcast to the platform ecosystem instantly.</p>
+            
+            <div class="media-upload-box">
+                <label class="file-upload-btn" style="background:#2563eb;">
+                    Select Photo or Video File
+                    <input type="file" id="postFileInput" accept="image/*,video/*" style="display:none;" onchange="processPostFile(this)">
+                </label>
+                <div id="postMediaPreviewContainer" class="preview-container-box hidden"></div>
+            </div>
+
+            <label style="display:inline-block; margin-top:20px;"><b>Post Title / Name</b></label>
+            <input id="postTitleInput" class="input" placeholder="Enter a descriptive post name...">
+
+            <label style="display:inline-block; margin-top:15px;"><b>Visibility Settings</b></label>
+            <select id="postVisibilityInput" class="select">
+                <option value="public">Public (Everyone can view)</option>
+                <option value="friends">Friends Only (Visible to your friend list)</option>
+                <option value="private">Private (Only you can view)</option>
+            </select>
+
+            <button class="action-btn-styled" style="width: 100%; margin-top:25px; background:#10b981;" onclick="submitNewPost()">Publish Post</button>
+            <div id="uploadError" style="margin-top:10px; color:red; text-align:center; font-weight:bold;"></div>
+        </div>
+    `;
+}
+
+function processPostFile(input) {
+    const file = input.files[0];
+    const previewContainer = document.getElementById("postMediaPreviewContainer");
+    
+    if (!file || !previewContainer) return;
+
+    if (file.type.startsWith("image/")) {
+        postFileTypeStorage = "image";
+    } else if (file.type.startsWith("video/")) {
+        postFileTypeStorage = "video";
+    } else {
+        alert("Unsupported file type! Please select an image or video file.");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        base64PostMediaStorage = e.target.result;
+        previewContainer.classList.remove("hidden");
+        
+        if (postFileTypeStorage === "image") {
+            previewContainer.innerHTML = `<img src="${base64PostMediaStorage}" alt="Post Preview">`;
+        } else {
+            previewContainer.innerHTML = `<video src="${base64PostMediaStorage}" controls muted></video>`;
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+function submitNewPost() {
+    const title = document.getElementById("postTitleInput").value.trim();
+    const visibility = document.getElementById("postVisibilityInput").value;
+    const errorDiv = document.getElementById("uploadError");
+
+    if (!base64PostMediaStorage) {
+        errorDiv.innerHTML = "Please select a photo or video file first!";
+        return;
+    }
+    if (!title) {
+        errorDiv.innerHTML = "Please provide a name/title for your post!";
+        return;
+    }
+
+    let localPosts = getPosts();
+    const uniquePostId = "post_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
+
+    localPosts.push({
+        id: uniquePostId,
+        author: currentUser.username,
+        title: title,
+        media: base64PostMediaStorage,
+        type: postFileTypeStorage,
+        visibility: visibility,
+        likes: [], // Usernames of people who liked
+        comments: [], // Objects array: { commenter: 'name', text: 'message' }
+        timestamp: Date.now()
+    });
+
+    localStorage.setItem("snapio_posts", JSON.stringify(localPosts));
+    showForYouPage(); // Direct redirect to live feed after broadcast
+}
+
+
+/* =========================================================
+   FOR YOU TAB (GLOBAL COMBINED STREAM FEED)
+   ========================================================= */
+function showForYouPage() {
+    contentArea.innerHTML = `
+        <div class="page-title">For You Feed</div>
+        <div class="feed-container" id="feedPostsStream"></div>
+    `;
+    renderFeedStream();
+}
+
+function renderFeedStream() {
+    const streamContainer = document.getElementById("feedPostsStream");
+    if (!streamContainer) return;
+
+    let localPosts = getPosts();
     let localUsers = getUsers();
     let me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
 
-    contentArea.innerHTML = `
-        <div class="page-title">Friends</div>
-        <h3>Friends: ${me.friends ? me.friends.length : 0}</h3>
-        
-        <div class="friends-list-container" id="friendsVisualContainer"></div>
+    // Sort newer updates upwards
+    localPosts.sort((a, b) => b.timestamp - a.timestamp);
 
-        <div class="friend-card">
-            <h4>Search Username</h4>
-            <div class="search-user">
-                <input id="friendSearch" class="input" placeholder="Type username">
-                <button onclick="searchUser()">Search User</button>
-            </div>
-            <div id="searchResult"></div>
-            
-            <div class="request-box">
-                <h3>Requests: ${me.requests ? me.requests.length : 0}</h3>
-                <div id="requestList"></div>
-            </div>
-        </div>
-    `;
-
-    renderVisualFriends(me, localUsers);
-    renderRequests();
-}
-
-function renderVisualFriends(me, localUsers) {
-    const container = document.getElementById("friendsVisualContainer");
-    if (!container) return;
-    container.innerHTML = "";
-
-    if (!me.friends || me.friends.length === 0) {
-        container.innerHTML = "<p style='color: #888;'>You haven't added any friends yet.</p>";
-        return;
-    }
-
-    me.friends.forEach(friendName => {
-        const targetFriendObj = localUsers.find(u => u.username.toLowerCase() === friendName.toLowerCase());
-        const pfpSrc = (targetFriendObj && targetFriendObj.pfp) ? targetFriendObj.pfp : defaultPfp;
-
-        const friendNode = document.createElement("div");
-        friendNode.className = "friend-user-node";
-        friendNode.onclick = () => { showTargetUserProfile(targetFriendObj ? targetFriendObj.username : friendName); };
-        friendNode.innerHTML = `
-            <img class="pfp-circle" src="${pfpSrc}" alt="pfp">
-            <span><b>${targetFriendObj ? targetFriendObj.username : friendName}</b></span>
-        `;
-        container.appendChild(friendNode);
+    // Context filter definitions parsing logic rules safely
+    const visiblePosts = localPosts.filter(post => {
+        if (post.visibility === "public") return true;
+        if (post.author.toLowerCase() === currentUser.username.toLowerCase()) return true;
+        if (post.visibility === "friends") {
+            // Check cross connected friendship array references safely
+            if (me && me.friends && me.friends.some(f => f.toLowerCase() === post.author.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
     });
-}
 
-function searchUser(){
-    const username = document.getElementById("friendSearch").value.trim();
-    let localUsers = getUsers();
-    const searchResult = document.getElementById("searchResult");
-
-    if(!username) {
-        searchResult.innerHTML = "<p style='color: red; margin-top: 10px;'>Please enter a name</p>";
+    if (visiblePosts.length === 0) {
+        streamContainer.innerHTML = "<p style='text-align:center; color:#888; margin-top:40px;'>No shared posts found inside the system database yet.</p>";
         return;
     }
 
-    // Completely case-insensitive matching fallback logic
-    const foundUser = localUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
+    streamContainer.innerHTML = "";
+    visiblePosts.forEach(post => {
+        const authorObj = localUsers.find(u => u.username.toLowerCase() === post.author.toLowerCase());
+        const authorPfp = (authorObj && authorObj.pfp) ? authorObj.pfp : defaultPfp;
+        
+        const hasLiked = post.likes.some(u => u.toLowerCase() === currentUser.username.toLowerCase());
+        const likeBtnClass = hasLiked ? "post-btn liked" : "post-btn";
 
-    if(!foundUser){
-        searchResult.innerHTML = "<p style='color: red; margin-top: 10px;'>User not found</p>";
-        return;
-    }
+        const cardElement = document.createElement("div");
+        cardElement.className = "post-card";
+        
+        let mediaTag = "";
+        if (post.type === "video") {
+            mediaTag = `<video class="post-media-display" src="${post.media}" controls></video>`;
+        } else {
+            mediaTag = `<img class="post-media-display" src="${post.media}" alt="Post Content">`;
+        }
 
-    if(foundUser.username.toLowerCase() === currentUser.username.toLowerCase()){
-        searchResult.innerHTML = "<p style='color: orange; margin-top: 10px;'>You cannot add yourself</p>";
-        return;
-    }
+        // Render Comment Strings Elements Block
+        let commentsMarkup = "";
+        if (post.comments && post.comments.length > 0) {
+            post.comments.forEach(c => {
+                commentsMarkup += `<div class="comment-item"><b>${c.commenter}:</b> ${c.text}</div>`;
+            });
+        }
 
-    if(!foundUser.requests) foundUser.requests = [];
-    if(!foundUser.friends) foundUser.friends = [];
-
-    if(foundUser.friends.some(f => f.toLowerCase() === currentUser.username.toLowerCase())) {
-        searchResult.innerHTML = `<p style='color: green; margin-top: 10px;'>You are already friends with ${foundUser.username}!</p>`;
-        return;
-    }
-
-    const alreadySent = foundUser.requests.some(r => r.toLowerCase() === currentUser.username.toLowerCase());
-    const btnText = alreadySent ? "Pending" : "Add";
-    const btnClass = alreadySent ? "add-btn pending" : "add-btn";
-    const btnDisabled = alreadySent ? "disabled" : "";
-
-    // Beautiful flex layouts mapping user info left and add action right
-    searchResult.innerHTML = `
-        <div class="search-result-row">
-            <div class="search-user-info">
-                <img class="pfp-circle" src="${foundUser.pfp || defaultPfp}" alt="pfp">
-                <span><b>${foundUser.username}</b></span>
+        cardElement.innerHTML = `
+            <div class="post-header">
+                <div class="post-user-details" onclick="showTargetUserProfile('${post.author}')">
+                    <img class="pfp-circle" src="${authorPfp}" alt="pfp">
+                    <div>
+                        <strong>${post.author}</strong>
+                        <div style="font-size:12px; color:#888;">${post.title}</div>
+                    </div>
+                </div>
+                <span style="font-size:12px; color: #94a3b8; text-transform: capitalize;">${post.visibility}</span>
             </div>
-            <button id="addBtnElement" class="${btnClass}" ${btnDisabled} onclick="sendRequest('${foundUser.username}')">${btnText}</button>
-        </div>
-    `;
-}
+            
+            ${mediaTag}
 
-function sendRequest(targetUsername){
-    let localUsers = getUsers();
-    const addBtnElement = document.getElementById("addBtnElement");
-    
-    const targetUser = localUsers.find(u => u.username.toLowerCase() === targetUsername.toLowerCase());
+            <div class="post-actions">
+                <button class="${likeBtnClass}" onclick="toggleLikePost('${post.id}')">
+                    ♥ <span>${post.likes ? post.likes.length : 0}</span>
+                </button>
+            </div>
 
-    if(!targetUser) return;
-    if(!targetUser.requests) targetUser.requests = [];
-
-    const alreadySent = targetUser.requests.some(r => r.toLowerCase() === currentUser.username.toLowerCase());
-
-    if(!alreadySent){
-        targetUser.requests.push(currentUser.username);
-        localStorage.setItem("snapio_users", JSON.stringify(localUsers));
-    }
-    
-    // Smooth element transition on interaction
-    if(addBtnElement) {
-        addBtnElement.innerText = "Pending";
-        addBtnElement.className = "add-btn pending";
-        addBtnElement.disabled = true;
-    }
-}
-
-function renderRequests(){
-    let localUsers = getUsers();
-    const me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
-    const requestList = document.getElementById("requestList");
-
-    if(!requestList) return;
-    requestList.innerHTML = "";
-
-    if(!me.requests || me.requests.length === 0){
-        requestList.innerHTML = `<p style='color: #888; margin-top: 10px;'>No incoming requests.</p>`;
-        return;
-    }
-
-    me.requests.forEach(sender => {
-        requestList.innerHTML += `
-            <div class="request-item">
-                <span><b>${sender}</b> wants to be your friend</span>
-                <div>
-                    <button class="action-btn" onclick="acceptRequest('${sender}')">Accept</button>
-                    <button class="decline-btn" onclick="declineRequest('${sender}')">Decline</button>
+            <div class="comment-section">
+                <div style="margin-bottom:10px; max-height: 120px; overflow-y:auto;">
+                    ${commentsMarkup}
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <input id="comment_input_${post.id}" class="input" style="padding:8px 12px; font-size:13px; margin-top:0;" placeholder="Add a comment...">
+                    <button class="action-btn-styled" style="padding:8px 14px; font-size:13px;" onclick="submitComment('${post.id}')">Reply</button>
                 </div>
             </div>
         `;
+        streamContainer.appendChild(cardElement);
     });
 }
 
-function acceptRequest(sender){
-    let localUsers = getUsers();
-    const me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
-    const senderUser = localUsers.find(u => u.username.toLowerCase() === sender.toLowerCase());
+function toggleLikePost(postId) {
+    let localPosts = getPosts();
+    const post = localPosts.find(p => p.id === postId);
+    if (!post) return;
 
-    if(!me || !senderUser) return;
+    if (!post.likes) post.likes = [];
 
-    if(!me.friends) me.friends = [];
-    if(!senderUser.friends) senderUser.friends = [];
-
-    if(!me.friends.some(f => f.toLowerCase() === sender.toLowerCase())){
-        me.friends.push(senderUser.username);
+    const myIndex = post.likes.findIndex(u => u.toLowerCase() === currentUser.username.toLowerCase());
+    if (myIndex === -1) {
+        post.likes.push(currentUser.username);
+    } else {
+        post.likes.splice(myIndex, 1);
     }
 
-    if(!senderUser.friends.some(f => f.toLowerCase() === me.username.toLowerCase())){
-        senderUser.friends.push(me.username);
-    }
-
-    me.requests = me.requests.filter(req => req.toLowerCase() !== sender.toLowerCase());
-
-    localStorage.setItem("snapio_users", JSON.stringify(localUsers));
-    localStorage.setItem("snapio_currentUser", JSON.stringify(me));
-    currentUser = me;
-
-    showFriendsPage();
+    localStorage.setItem("snapio_posts", JSON.stringify(localPosts));
+    recalculateTotalLikesReceived();
+    renderFeedStream();
 }
 
-function declineRequest(sender){
+function submitComment(postId) {
+    const inputElement = document.getElementById(`comment_input_${postId}`);
+    if (!inputElement) return;
+
+    const text = inputElement.value.trim();
+    if (!text) return;
+
+    let localPosts = getPosts();
+    const post = localPosts.find(p => p.id === postId);
+    if (!post) return;
+
+    if (!post.comments) post.comments = [];
+    post.comments.push({
+        commenter: currentUser.username,
+        text: text
+    });
+
+    localStorage.setItem("snapio_posts", JSON.stringify(localPosts));
+    inputElement.value = "";
+    renderFeedStream();
+}
+
+function recalculateTotalLikesReceived() {
     let localUsers = getUsers();
-    const me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
+    let localPosts = getPosts();
 
-    if(!me) return;
-
-    me.requests = me.requests.filter(req => req.toLowerCase() !== sender.toLowerCase());
+    localUsers.forEach(user => {
+        let count = 0;
+        localPosts.forEach(post => {
+            if (post.author.toLowerCase() === user.username.toLowerCase()) {
+                if (post.likes) count += post.likes.length;
+            }
+        });
+        user.likesReceived = count;
+    });
 
     localStorage.setItem("snapio_users", JSON.stringify(localUsers));
-    localStorage.setItem("snapio_currentUser", JSON.stringify(me));
-    currentUser = me;
-
-    showFriendsPage();
 }
 
-/* PROFILE SECTION */
+
+/* =========================================================
+   PROFILE VIEW AND CUSTOMIZATION SECTION
+   ========================================================= */
 function showOwnProfile() {
+    recalculateTotalLikesReceived();
     let localUsers = getUsers();
+    let localPosts = getPosts();
+    
     const me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
 
     const currentPfp = me.pfp || defaultPfp;
     const currentBio = me.bio || "No bio set yet.";
-    const totalFriends = me.friends ? me.friends.length : 0;
+
+    // Counts calculations
+    const myOwnPosts = localPosts.filter(p => p.author.toLowerCase() === currentUser.username.toLowerCase());
+    const totalPostsCount = myOwnPosts.length;
+    const totalLikesCount = me.likesReceived || 0;
+    const totalFollowersCount = me.followers ? me.followers.length : 0;
 
     contentArea.innerHTML = `
         <div class="page-title">My Profile</div>
@@ -753,10 +825,33 @@ function showOwnProfile() {
             <img class="pfp-circle-large" src="${currentPfp}" alt="Profile Picture">
             <h2>${me.username}</h2>
             <p class="bio-text">"${currentBio}"</p>
-            <p style="margin-bottom: 20px; font-weight: bold; color:#2563eb;">Friends count: ${totalFriends}</p>
+            
+            <div class="stats-row">
+                <span>Posts: ${totalPostsCount}</span>
+                <span>Likes: ${totalLikesCount}</span>
+                <span>Followers: ${totalFollowersCount}</span>
+            </div>
+
             <button class="action-btn-styled" onclick="showCustomizeInterface()">Customize Profile</button>
+            
+            <h3 style="margin-top: 30px; text-align: left; border-bottom: 1px solid #e2e8f0; padding-bottom:8px;">My Uploaded Media</h3>
+            <div class="profile-posts-grid" id="profileGridContainer"></div>
         </div>
     `;
+
+    // Render personal uploads layout grid mapping inside profile cards
+    const gridContainer = document.getElementById("profileGridContainer");
+    if (myOwnPosts.length === 0) {
+        gridContainer.innerHTML = "<p style='color:#888; grid-column: 1/-1; padding:20px;'>You haven't posted any media assets yet.</p>";
+    } else {
+        myOwnPosts.forEach(post => {
+            if (post.type === "video") {
+                gridContainer.innerHTML += `<video class="grid-media-item" src="${post.media}" muted preload="metadata"></video>`;
+            } else {
+                gridContainer.innerHTML += `<img class="grid-media-item" src="${post.media}" alt="Grid Asset">`;
+            }
+        });
+    }
 }
 
 function showCustomizeInterface() {
@@ -816,6 +911,7 @@ function applyProfileChanges() {
     }
 
     let localUsers = getUsers();
+    let localPosts = getPosts();
     
     if (updatedName.toLowerCase() !== currentUser.username.toLowerCase()) {
         const nameExists = localUsers.find(u => u.username.toLowerCase() === updatedName.toLowerCase());
@@ -824,10 +920,30 @@ function applyProfileChanges() {
             return;
         }
 
-        localUsers.forEach(u => {
-            if(u.friends) u.friends = u.friends.map(f => f.toLowerCase() === currentUser.username.toLowerCase() ? updatedName : f);
-            if(u.requests) u.requests = u.requests.map(r => r.toLowerCase() === currentUser.username.toLowerCase() ? updatedName : r);
+        // Migrate all posts authorship tracking records seamlessly
+        localPosts.forEach(p => {
+            if (p.author.toLowerCase() === currentUser.username.toLowerCase()) {
+                p.author = updatedName;
+            }
+            if (p.likes) {
+                p.likes = p.likes.map(u => u.toLowerCase() === currentUser.username.toLowerCase() ? updatedName : u);
+            }
+            if (p.comments) {
+                p.comments.forEach(c => {
+                    if (c.commenter.toLowerCase() === currentUser.username.toLowerCase()) c.commenter = updatedName;
+                });
+            }
         });
+
+        // Migrate global follower reference fields
+        localUsers.forEach(u => {
+            if (u.followers) u.followers = u.followers.map(x => x.toLowerCase() === currentUser.username.toLowerCase() ? updatedName : x);
+            if (u.following) u.following = u.following.map(x => x.toLowerCase() === currentUser.username.toLowerCase() ? updatedName : x);
+            if (u.friends) u.friends = u.friends.map(x => x.toLowerCase() === currentUser.username.toLowerCase() ? updatedName : x);
+            if (u.requests) u.requests = u.requests.map(x => x.toLowerCase() === currentUser.username.toLowerCase() ? updatedName : x);
+        });
+
+        localStorage.setItem("snapio_posts", JSON.stringify(localPosts));
     }
 
     const userIndex = localUsers.findIndex(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
@@ -845,30 +961,103 @@ function applyProfileChanges() {
     }
 }
 
-/* EXTERNAL PROFILES */
-function showTargetUserProfile(targetUsername) {
-    let localUsers = getUsers();
-    const matchedUser = localUsers.find(u => u.username.toLowerCase() === targetUsername.toLowerCase());
 
-    if(!matchedUser) {
-        alert("Could not load user profile.");
+/* =========================================================
+   EXTERNAL ACCESSIBLE PROFILES LOOKUP (VISITING OTHER USERS)
+   ========================================================= */
+function showTargetUserProfile(targetUsername) {
+    if (targetUsername.toLowerCase() === currentUser.username.toLowerCase()) {
+        showOwnProfile();
         return;
     }
 
-    const currentPfp = matchedUser.pfp || defaultPfp;
-    const currentBio = matchedUser.bio || "No description set.";
-    const totalFriends = matchedUser.friends ? matchedUser.friends.length : 0;
+    recalculateTotalLikesReceived();
+    let localUsers = getUsers();
+    let localPosts = getPosts();
+
+    const user = localUsers.find(u => u.username.toLowerCase() === targetUsername.toLowerCase());
+    if(!user) {
+        alert("Could not load user profile properly.");
+        return;
+    }
+
+    if (!user.followers) user.followers = [];
+    
+    const me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
+    const isFollowing = user.followers.some(x => x.toLowerCase() === currentUser.username.toLowerCase());
+
+    const followBtnText = isFollowing ? "Unfollow" : "Follow User";
+    const followBtnColor = isFollowing ? "#ef4444" : "#2563eb";
+
+    const targetUserPosts = localPosts.filter(p => {
+        if (p.author.toLowerCase() !== user.username.toLowerCase()) return false;
+        if (p.visibility === "public") return true;
+        if (p.visibility === "friends" && me && me.friends && me.friends.some(f => f.toLowerCase() === user.username.toLowerCase())) {
+            return true;
+        }
+        return false;
+    });
 
     contentArea.innerHTML = `
-        <div class="page-title">${matchedUser.username}'s Profile</div>
+        <div class="page-title">${user.username}'s Profile</div>
         <div class="profile-container">
-            <img class="pfp-circle-large" src="${currentPfp}" alt="Profile Image">
-            <h2>${matchedUser.username}</h2>
-            <p class="bio-text">"${currentBio}"</p>
-            <p style="margin-bottom: 20px; font-weight: bold; color:#2563eb;">Friends count: ${totalFriends}</p>
-            <button class="action-btn-styled" style="background:#4b5563;" onclick="showFriendsPage()">Back to Friends</button>
+            <img class="pfp-circle-large" src="${user.pfp || defaultPfp}" alt="Profile Image">
+            <h2>${user.username}</h2>
+            <p class="bio-text">"${user.bio || 'No status bio set yet.'}"</p>
+            
+            <div class="stats-row">
+                <span>Posts: ${targetUserPosts.length}</span>
+                <span>Likes: ${user.likesReceived || 0}</span>
+                <span>Followers: ${user.followers.length}</span>
+            </div>
+
+            <div style="display:flex; gap:10px; justify-content:center; margin-bottom:25px;">
+                <button class="action-btn-styled" style="background:${followBtnColor};" onclick="toggleFollowUser('${user.username}')">${followBtnText}</button>
+                <button class="action-btn-styled" style="background:#4b5563;" onclick="showForYouPage()">Back to Feed</button>
+            </div>
+
+            <h3 style="margin-top: 30px; text-align: left; border-bottom: 1px solid #e2e8f0; padding-bottom:8px;">Shared Media</h3>
+            <div class="profile-posts-grid" id="targetProfileGridContainer"></div>
         </div>
     `;
+
+    const targetGrid = document.getElementById("targetProfileGridContainer");
+    if (targetUserPosts.length === 0) {
+        targetGrid.innerHTML = "<p style='color:#888; grid-column: 1/-1; padding:20px;'>No visible shared media entries found.</p>";
+    } else {
+        targetUserPosts.forEach(post => {
+            if (post.type === "video") {
+                targetGrid.innerHTML += `<video class="grid-media-item" src="${post.media}" muted preload="metadata"></video>`;
+            } else {
+                targetGrid.innerHTML += `<img class="grid-media-item" src="${post.media}" alt="Grid Asset">`;
+            }
+        });
+    }
+}
+
+function toggleFollowUser(targetUsername) {
+    let localUsers = getUsers();
+    
+    const targetUser = localUsers.find(u => u.username.toLowerCase() === targetUsername.toLowerCase());
+    const me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
+
+    if (!targetUser || !me) return;
+
+    if (!targetUser.followers) targetUser.followers = [];
+    if (!me.following) me.following = [];
+
+    const followerIndex = targetUser.followers.findIndex(x => x.toLowerCase() === currentUser.username.toLowerCase());
+
+    if (followerIndex === -1) {
+        targetUser.followers.push(me.username);
+        me.following.push(targetUser.username);
+    } else {
+        targetUser.followers.splice(followerIndex, 1);
+        me.following = me.following.filter(x => x.toLowerCase() !== targetUser.username.toLowerCase());
+    }
+
+    localStorage.setItem("snapio_users", JSON.stringify(localUsers));
+    showTargetUserProfile(targetUser.username);
 }
 </script>
 
