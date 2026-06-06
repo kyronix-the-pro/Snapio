@@ -112,12 +112,6 @@
             font-size: 15px;
         }
 
-        .message{
-            margin-top: 15px;
-            text-align: center;
-            font-weight: bold;
-        }
-
         /* DASHBOARD RESPONSIVE LAYOUT */
         #dashboard{
             display: flex;
@@ -166,6 +160,7 @@
         .page-title{
             font-size: 32px;
             margin-bottom: 15px;
+            font-weight: bold;
         }
 
         .friend-card{
@@ -173,6 +168,49 @@
             border-radius: 15px;
             padding: 20px;
             margin-top: 20px;
+        }
+
+        /* NEW FRIENDS DESIGN */
+        .friends-list-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0 30px 0;
+        }
+
+        .friend-user-node {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 10px 15px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .friend-user-node:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border-color: #2563eb;
+        }
+
+        .pfp-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #cbd5e1;
+        }
+
+        .pfp-circle-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #cbd5e1;
+            margin-bottom: 15px;
         }
 
         .search-user{
@@ -185,7 +223,7 @@
             margin-top: 0;
         }
 
-        .search-user button{
+        .search-user button, .action-btn-styled {
             padding: 14px 20px;
             border: none;
             border-radius: 10px;
@@ -193,14 +231,13 @@
             color: white;
             cursor: pointer;
             white-space: nowrap;
-        }
-
-        .search-user button:hover {
-            background: #1d4ed8;
+            font-weight: bold;
         }
 
         .request-box{
             margin-top: 30px;
+            border-top: 2px dashed #e2e8f0;
+            padding-top: 20px;
         }
 
         .request-item{
@@ -232,6 +269,22 @@
         .request-item .decline-btn {
             background: #ef4444;
             color: white;
+        }
+
+        /* PROFILE DESIGNS */
+        .profile-container {
+            max-width: 500px;
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .bio-text {
+            color: #4b5563;
+            margin: 10px 0 20px 0;
+            font-style: italic;
         }
 
         /* MOBILE MEDIA QUERIES */
@@ -292,11 +345,6 @@
                 justify-content: flex-end;
                 margin-top: 5px;
             }
-            
-            .request-item button {
-                flex: 1;
-                max-width: 120px;
-            }
         }
     </style>
 </head>
@@ -317,7 +365,7 @@
         <input id="registerUsername" class="input" placeholder="Username">
         <input id="registerPassword" class="input" type="password" placeholder="Password">
         <button class="main-btn create-btn" onclick="register()">Create Account</button>
-        <div id="registerMessage" class="message"></div>
+        <div id="registerMessage" style="margin-top: 10px; color: red; text-align: center;"></div>
     </div>
 </div>
 
@@ -327,7 +375,7 @@
         <input id="loginUsername" class="input" placeholder="Username">
         <input id="loginPassword" class="input" type="password" placeholder="Password">
         <button class="main-btn login-btn" onclick="login()">Sign In</button>
-        <div id="loginMessage" class="message"></div>
+        <div id="loginMessage" style="margin-top: 10px; color: red; text-align: center;"></div>
     </div>
 </div>
 
@@ -336,10 +384,10 @@
         <div class="sidebar-logo">SNAPIO</div>
         <div class="sidebar-menu">
             <div class="sidebar-item" onclick="showFriendsPage()">Friends</div>
-            <div class="sidebar-item">Profile</div>
-            <div class="sidebar-item">Chats</div>
-            <div class="sidebar-item">For You</div>
-            <div class="sidebar-item">Post Media</div>
+            <div class="sidebar-item" onclick="showOwnProfile()">Profile</div>
+            <div class="sidebar-item" onclick="alert('Chats coming soon!')">Chats</div>
+            <div class="sidebar-item" onclick="alert('For You coming soon!')">For You</div>
+            <div class="sidebar-item" onclick="alert('Post Media coming soon!')">Post Media</div>
         </div>
     </div>
     <div class="content" id="contentArea">
@@ -356,6 +404,9 @@ const dashboard = document.getElementById("dashboard");
 const contentArea = document.getElementById("contentArea");
 const registerMessage = document.getElementById("registerMessage");
 const loginMessage = document.getElementById("loginMessage");
+
+// Placeholder profile picture asset
+const defaultPfp = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
 let users = JSON.parse(localStorage.getItem("snapio_users")) || [];
 let currentUser = JSON.parse(localStorage.getItem("snapio_currentUser"));
@@ -393,12 +444,16 @@ function register(){
     users.push({
         username,
         password,
+        bio: "Hey there! I am using SNAPIO.",
+        pfp: defaultPfp,
         friends: [],
         requests: []
     });
 
     localStorage.setItem("snapio_users", JSON.stringify(users));
+    registerMessage.style.color = "green";
     registerMessage.innerHTML = "Account created! You can now sign in.";
+    setTimeout(() => { showLogin(); }, 1200);
 }
 
 function login(){
@@ -422,17 +477,25 @@ function openDashboard(){
     registerPage.classList.add("hidden");
     loginPage.classList.add("hidden");
     dashboard.classList.remove("hidden");
-    contentArea.innerHTML = `<h1>Welcome ${currentUser.username}</h1>`;
+    contentArea.innerHTML = `<h1>Welcome ${currentUser.username}</h1><p style='color: #666; margin-top:10px;'>Select an option from the navigation menu to begin.</p>`;
 }
 
+/* =========================================================
+   NEW FRIENDS PAGE SECTION
+   ========================================================= */
 function showFriendsPage(){
     const latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
     const me = latestUsers.find(u => u.username === currentUser.username);
 
+    // Dynamic clean setup matching your exact structural flow guidelines
     contentArea.innerHTML = `
         <div class="page-title">Friends</div>
+        <h3>Friends: ${me.friends ? me.friends.length : 0}</h3>
+        
+        <div class="friends-list-container" id="friendsVisualContainer"></div>
+
         <div class="friend-card">
-            <h3>Friends Count: ${me.friends ? me.friends.length : 0}</h3>
+            <h4>Search Username</h4>
             <div class="search-user">
                 <input id="friendSearch" class="input" placeholder="Type username">
                 <button onclick="searchUser()">Search User</button>
@@ -440,12 +503,40 @@ function showFriendsPage(){
             <div id="searchResult" style="margin-top: 15px;"></div>
             
             <div class="request-box">
-                <h3>Incoming Friend Requests (${me.requests ? me.requests.length : 0}):</h3>
+                <h3>Requests: ${me.requests ? me.requests.length : 0}</h3>
                 <div id="requestList"></div>
             </div>
         </div>
     `;
+
+    renderVisualFriends(me, latestUsers);
     renderRequests();
+}
+
+function renderVisualFriends(me, latestUsers) {
+    const container = document.getElementById("friendsVisualContainer");
+    if (!container) return;
+    container.innerHTML = "";
+
+    if (!me.friends || me.friends.length === 0) {
+        container.innerHTML = "<p style='color: #888;'>You haven't added any friends yet.</p>";
+        return;
+    }
+
+    me.friends.forEach(friendName => {
+        // Find friend object data to display picture
+        const targetFriendObj = latestUsers.find(u => u.username === friendName);
+        const pfpSrc = (targetFriendObj && targetFriendObj.pfp) ? targetFriendObj.pfp : defaultPfp;
+
+        const friendNode = document.createElement("div");
+        friendNode.className = "friend-user-node";
+        friendNode.onclick = () => { showTargetUserProfile(friendName); };
+        friendNode.innerHTML = `
+            <img class="pfp-circle" src="${pfpSrc}" alt="pfp">
+            <span><b>${friendName}</b></span>
+        `;
+        container.appendChild(friendNode);
+    });
 }
 
 function searchUser(){
@@ -578,6 +669,131 @@ function declineRequest(sender){
     localStorage.setItem("snapio_currentUser", JSON.stringify(me));
 
     showFriendsPage();
+}
+
+/* =========================================================
+   PROFILE VIEW AND CUSTOMIZATION SECTION
+   ========================================================= */
+function showOwnProfile() {
+    let latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
+    const me = latestUsers.find(u => u.username === currentUser.username);
+
+    // Make sure data profiles stand accurate
+    const currentPfp = me.pfp || defaultPfp;
+    const currentBio = me.bio || "No bio set yet.";
+    const totalFriends = me.friends ? me.friends.length : 0;
+
+    contentArea.innerHTML = `
+        <div class="page-title">My Profile</div>
+        <div class="profile-container">
+            <img class="pfp-circle-large" src="${currentPfp}" alt="Profile Picture">
+            <h2>${me.username}</h2>
+            <p class="bio-text">"${currentBio}"</p>
+            <p style="margin-bottom: 20px; font-weight: bold; color:#2563eb;">Friends count: ${totalFriends}</p>
+            <button class="action-btn-styled" onclick="showCustomizeInterface()">Customize Profile</button>
+        </div>
+    `;
+}
+
+function showCustomizeInterface() {
+    let latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
+    const me = latestUsers.find(u => u.username === currentUser.username);
+
+    contentArea.innerHTML = `
+        <div class="page-title">Apply Changes</div>
+        <div class="profile-container" style="text-align: left;">
+            <p style="margin-bottom: 15px; color: #555;">Make changes to your card data below, then save updates via the top button or the Apply button layout directly.</p>
+            
+            <label><b>Profile Picture URL</b></label>
+            <input id="editPfp" class="input" value="${me.pfp || defaultPfp}" placeholder="Paste image link">
+            
+            <label style="display:inline-block; margin-top:15px;"><b>Username</b></label>
+            <input id="editName" class="input" value="${me.username}" placeholder="Change username">
+            
+            <label style="display:inline-block; margin-top:15px;"><b>Bio Description</b></label>
+            <input id="editBio" class="input" value="${me.bio || ''}" placeholder="Tell us about yourself">
+            
+            <div style="margin-top: 25px; display:flex; gap: 10px;">
+                <button class="action-btn-styled" style="background:#10b981; flex: 1;" onclick="applyProfileChanges()">Apply Updates</button>
+                <button class="action-btn-styled" style="background:#6b7280;" onclick="showOwnProfile()">Cancel</button>
+            </div>
+            <div id="editError" style="margin-top:10px; color:red; text-align:center;"></div>
+        </div>
+    `;
+}
+
+function applyProfileChanges() {
+    const updatedName = document.getElementById("editName").value.trim();
+    const updatedPfp = document.getElementById("editPfp").value.trim();
+    const updatedBio = document.getElementById("editBio").value.trim();
+    const errorDiv = document.getElementById("editError");
+
+    if(!updatedName) {
+        errorDiv.innerHTML = "Username cannot be empty!";
+        return;
+    }
+
+    let latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
+    
+    // Check name availability if user has changed their baseline username handle
+    if (updatedName.toLowerCase() !== currentUser.username.toLowerCase()) {
+        const nameExists = latestUsers.find(u => u.username.toLowerCase() === updatedName.toLowerCase());
+        if(nameExists) {
+            errorDiv.innerHTML = "This username alternative is already taken!";
+            return;
+        }
+
+        // Clean up references to old name in friends arrays and requests across other accounts
+        latestUsers.forEach(u => {
+            if(u.friends) u.friends = u.friends.map(f => f === currentUser.username ? updatedName : f);
+            if(u.requests) u.requests = u.requests.map(r => r === currentUser.username ? updatedName : r);
+        });
+    }
+
+    // Locate matching original database reference node
+    const userIndex = latestUsers.findIndex(u => u.username === currentUser.username);
+    if(userIndex !== -1) {
+        latestUsers[userIndex].username = updatedName;
+        latestUsers[userIndex].pfp = updatedPfp || defaultPfp;
+        latestUsers[userIndex].bio = updatedBio;
+
+        localStorage.setItem("snapio_users", JSON.stringify(latestUsers));
+        
+        // Sync running logged-in current user context data state
+        currentUser = latestUsers[userIndex];
+        localStorage.setItem("snapio_currentUser", JSON.stringify(currentUser));
+        
+        // Return view panel dashboard
+        showOwnProfile();
+    }
+}
+
+/* =========================================================
+   EXTERNAL ACCESSIBLE PROFILES LOOKUP (FRIEND PROFILES VIEW)
+   ========================================================= */
+function showTargetUserProfile(targetUsername) {
+    let latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
+    const matchedUser = latestUsers.find(u => u.username === targetUsername);
+
+    if(!matchedUser) {
+        alert("Could not load user data profiles correctly.");
+        return;
+    }
+
+    const currentPfp = matchedUser.pfp || defaultPfp;
+    const currentBio = matchedUser.bio || "No description set.";
+    const totalFriends = matchedUser.friends ? matchedUser.friends.length : 0;
+
+    contentArea.innerHTML = `
+        <div class="page-title">${matchedUser.username}'s Profile</div>
+        <div class="profile-container">
+            <img class="pfp-circle-large" src="${currentPfp}" alt="User Profile Image">
+            <h2>${matchedUser.username}</h2>
+            <p class="bio-text">"${currentBio}"</p>
+            <p style="margin-bottom: 20px; font-weight: bold; color:#2563eb;">Friends count: ${totalFriends}</p>
+            <button class="action-btn-styled" style="background:#4b5563;" onclick="showFriendsPage()">Back to Friends</button>
+        </div>
+    `;
 }
 </script>
 
