@@ -178,6 +178,10 @@
             cursor: pointer;
         }
 
+        .search-user button:hover {
+            background: #1d4ed8;
+        }
+
         .request-box{
             margin-top: 30px;
         }
@@ -188,6 +192,28 @@
             padding: 15px;
             border-radius: 10px;
             margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .request-item button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-left: 5px;
+            font-weight: bold;
+        }
+
+        .request-item .action-btn {
+            background: #2563eb;
+            color: white;
+        }
+
+        .request-item .decline-btn {
+            background: #ef4444;
+            color: white;
         }
     </style>
 </head>
@@ -237,7 +263,7 @@
 </div>
 
 <script>
-// Cache DOM Elements explicitly
+// DOM Bindings
 const landingPage = document.getElementById("landingPage");
 const registerPage = document.getElementById("registerPage");
 const loginPage = document.getElementById("loginPage");
@@ -287,7 +313,7 @@ function register(){
     });
 
     localStorage.setItem("snapio_users", JSON.stringify(users));
-    registerMessage.innerHTML = "Account created!";
+    registerMessage.innerHTML = "Account created! You can now sign in.";
 }
 
 function login(){
@@ -321,14 +347,15 @@ function showFriendsPage(){
     contentArea.innerHTML = `
         <div class="page-title">Friends</div>
         <div class="friend-card">
-            <h3>Friends: ${me.friends ? me.friends.length : 0}</h3>
+            <h3>Friends Count: ${me.friends ? me.friends.length : 0}</h3>
             <div class="search-user">
                 <input id="friendSearch" class="input" placeholder="Type username">
-                <button onclick="searchUser()">Search</button>
+                <button onclick="searchUser()">Search User</button>
             </div>
-            <div id="searchResult"></div>
+            <div id="searchResult" style="margin-top: 15px;"></div>
+            
             <div class="request-box">
-                <h3>Requests: ${me.requests ? me.requests.length : 0}</h3>
+                <h3>Incoming Friend Requests (${me.requests ? me.requests.length : 0}):</h3>
                 <div id="requestList"></div>
             </div>
         </div>
@@ -341,33 +368,48 @@ function searchUser(){
     const latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
     const searchResult = document.getElementById("searchResult");
 
+    if(!username) {
+        searchResult.innerHTML = "<p style='color: red;'>Please enter a name</p>";
+        return;
+    }
+
     const foundUser = latestUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
 
     if(!foundUser){
-        searchResult.innerHTML = "<p>User not found</p>";
+        searchResult.innerHTML = "<p style='color: red;'>User not found</p>";
         return;
     }
 
     if(foundUser.username === currentUser.username){
-        searchResult.innerHTML = "<p>You cannot add yourself</p>";
+        searchResult.innerHTML = "<p style='color: orange;'>You cannot add yourself</p>";
+        return;
+    }
+
+    // Safety check if arrays aren't loaded properly
+    if(!foundUser.requests) foundUser.requests = [];
+    if(!foundUser.friends) foundUser.friends = [];
+
+    if(foundUser.friends.includes(currentUser.username)) {
+        searchResult.innerHTML = `<p style='color: green;'>You are already friends with ${foundUser.username}!</p>`;
         return;
     }
 
     searchResult.innerHTML = `
         <div class="request-item">
-            <b>${foundUser.username}</b>
-            <br><br>
-            <button onclick="sendRequest('${foundUser.username}')">Send Request</button>
+            <span>Found User: <b>${foundUser.username}</b></span>
+            <button class="action-btn" onclick="sendRequest('${foundUser.username}')">Send Request</button>
         </div>
     `;
 }
 
-function sendRequest(username){
+function sendRequest(targetUsername){
     let latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
     const searchResult = document.getElementById("searchResult");
-    const targetUser = latestUsers.find(u => u.username === username);
+    
+    const targetUser = latestUsers.find(u => u.username === targetUsername);
 
     if(!targetUser){
+        searchResult.innerHTML = "<p style='color: red;'>Error sending request.</p>";
         return;
     }
 
@@ -376,13 +418,14 @@ function sendRequest(username){
     const alreadySent = targetUser.requests.includes(currentUser.username);
 
     if(alreadySent){
-        searchResult.innerHTML = `<p>Request already sent.</p>`;
+        searchResult.innerHTML = `<p style='color: orange;'>Request already pending with ${targetUsername}.</p>`;
         return;
     }
 
     targetUser.requests.push(currentUser.username);
     localStorage.setItem("snapio_users", JSON.stringify(latestUsers));
-    searchResult.innerHTML = `<p>Friend request sent!</p>`;
+    
+    searchResult.innerHTML = `<p style='color: green;'>Friend request sent to ${targetUsername}!</p>`;
 }
 
 function renderRequests(){
@@ -390,24 +433,22 @@ function renderRequests(){
     const me = latestUsers.find(u => u.username === currentUser.username);
     const requestList = document.getElementById("requestList");
 
-    if(!requestList){
-        return;
-    }
-
+    if(!requestList) return;
     requestList.innerHTML = "";
 
     if(!me.requests || me.requests.length === 0){
-        requestList.innerHTML = `<p>No requests.</p>`;
+        requestList.innerHTML = `<p style='color: #888; margin-top: 10px;'>No incoming requests.</p>`;
         return;
     }
 
     me.requests.forEach(sender => {
         requestList.innerHTML += `
             <div class="request-item">
-                <b>${sender}</b>
-                <br><br>
-                <button onclick="acceptRequest('${sender}')">Accept</button>
-                <button onclick="declineRequest('${sender}')">Decline</button>
+                <span><b>${sender}</b> wants to be your friend</span>
+                <div>
+                    <button class="action-btn" onclick="acceptRequest('${sender}')">Accept</button>
+                    <button class="decline-btn" onclick="declineRequest('${sender}')">Decline</button>
+                </div>
             </div>
         `;
     });
@@ -418,9 +459,7 @@ function acceptRequest(sender){
     const me = latestUsers.find(u => u.username === currentUser.username);
     const senderUser = latestUsers.find(u => u.username === sender);
 
-    if(!me || !senderUser){
-        return;
-    }
+    if(!me || !senderUser) return;
 
     if(!me.friends) me.friends = [];
     if(!senderUser.friends) senderUser.friends = [];
@@ -445,6 +484,8 @@ function acceptRequest(sender){
 function declineRequest(sender){
     let latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
     const me = latestUsers.find(u => u.username === currentUser.username);
+
+    if(!me) return;
 
     me.requests = me.requests.filter(req => req !== sender);
 
