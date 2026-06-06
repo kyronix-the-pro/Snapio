@@ -1,3 +1,16 @@
+Here is the updated code. I have made the layout fully responsive by adding CSS media queries and modern layout techniques (like CSS Grid and Flexbox wrapping) so that everything looks clean and works well on mobile screens.
+
+### Mobile Optimization Changes
+
+* **Responsive Sidebar**: On mobile devices, the sidebar automatically transitions from a vertical left-hand drawer into a clean top-navigation menu.
+* **Flexible Sizing**: The landing, login, and registration card components now scale fluidly, matching smaller screen widths with comfortable touch targets.
+* **Stacking Friend Controls**: The user search layout and request action buttons cleanly stack vertically on narrow devices to maximize space.
+
+---
+
+### The Updated Code
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +27,7 @@
 
         body{
             background: #f5f7fb;
-            height: 100vh;
+            min-height: 100vh;
         }
 
         .hidden{
@@ -29,19 +42,21 @@
             justify-content: center;
             align-items: center;
             background: linear-gradient(135deg, #2563eb, #1e3a8a);
+            padding: 20px;
         }
 
         .landing-card{
             background: white;
-            padding: 50px;
-            width: 450px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 450px;
             border-radius: 20px;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
         .logo{
-            font-size: 60px;
+            font-size: clamp(40px, 8vw, 60px);
             font-weight: bold;
             color: #2563eb;
             margin-bottom: 10px;
@@ -81,17 +96,19 @@
         /* AUTH */
         .auth-box{
             background: white;
-            width: 450px;
-            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            padding: 30px 25px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,.15);
         }
 
         .auth-page{
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
 
         .auth-title{
@@ -114,10 +131,11 @@
             font-weight: bold;
         }
 
-        /* DASHBOARD */
+        /* DASHBOARD RESPONSIVE LAYOUT */
         #dashboard{
             display: flex;
-            height: 100vh;
+            flex-direction: row;
+            min-height: 100vh;
         }
 
         .sidebar{
@@ -125,6 +143,7 @@
             background: #111827;
             color: white;
             padding: 20px;
+            flex-shrink: 0;
         }
 
         .sidebar-logo{
@@ -149,6 +168,7 @@
             flex: 1;
             background: white;
             padding: 30px;
+            overflow-y: auto;
         }
 
         .page-title{
@@ -169,6 +189,10 @@
             margin-top: 15px;
         }
 
+        .search-user .input{
+            margin-top: 0;
+        }
+
         .search-user button{
             padding: 14px 20px;
             border: none;
@@ -176,6 +200,7 @@
             background: #2563eb;
             color: white;
             cursor: pointer;
+            white-space: nowrap;
         }
 
         .search-user button:hover {
@@ -195,6 +220,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 15px;
         }
 
         .request-item button {
@@ -214,6 +240,72 @@
         .request-item .decline-btn {
             background: #ef4444;
             color: white;
+        }
+
+        /* MOBILE MEDIA QUERIES */
+        @media (max-width: 768px) {
+            #dashboard {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 15px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                border-bottom: 1px solid #1f2937;
+            }
+
+            .sidebar-logo {
+                margin-bottom: 15px;
+                font-size: 28px;
+            }
+
+            /* Turn items into a scrollable or wrapped row on small viewports */
+            .sidebar-menu {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px;
+                width: 100%;
+            }
+
+            .sidebar-item {
+                margin-top: 0;
+                padding: 10px 15px;
+                font-size: 14px;
+                background: #1f2937;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+
+            .search-user {
+                flex-direction: column;
+            }
+
+            .search-user button {
+                width: 100%;
+            }
+
+            .request-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .request-item div {
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+                margin-top: 5px;
+            }
+            
+            .request-item button {
+                flex: 1;
+                max-width: 120px;
+            }
         }
     </style>
 </head>
@@ -251,11 +343,13 @@
 <div id="dashboard" class="hidden">
     <div class="sidebar">
         <div class="sidebar-logo">SNAPIO</div>
-        <div class="sidebar-item" onclick="showFriendsPage()">Friends</div>
-        <div class="sidebar-item">Profile</div>
-        <div class="sidebar-item">Chats</div>
-        <div class="sidebar-item">For You</div>
-        <div class="sidebar-item">Post Media</div>
+        <div class="sidebar-menu">
+            <div class="sidebar-item" onclick="showFriendsPage()">Friends</div>
+            <div class="sidebar-item">Profile</div>
+            <div class="sidebar-item">Chats</div>
+            <div class="sidebar-item">For You</div>
+            <div class="sidebar-item">Post Media</div>
+        </div>
     </div>
     <div class="content" id="contentArea">
         <h1>Welcome to SNAPIO</h1>
@@ -385,7 +479,6 @@ function searchUser(){
         return;
     }
 
-    // Safety check if arrays aren't loaded properly
     if(!foundUser.requests) foundUser.requests = [];
     if(!foundUser.friends) foundUser.friends = [];
 
@@ -499,3 +592,5 @@ function declineRequest(sender){
 
 </body>
 </html>
+
+```
