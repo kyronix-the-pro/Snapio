@@ -170,7 +170,7 @@
             margin-top: 20px;
         }
 
-        /* NEW FRIENDS DESIGN */
+        /* FRIENDS GRID */
         .friends-list-container {
             display: flex;
             flex-wrap: wrap;
@@ -234,6 +234,18 @@
             font-weight: bold;
         }
 
+        .file-upload-btn {
+            display: inline-block;
+            background: #4b5563;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
         .request-box{
             margin-top: 30px;
             border-top: 2px dashed #e2e8f0;
@@ -271,7 +283,7 @@
             color: white;
         }
 
-        /* PROFILE DESIGNS */
+        /* PROFILE */
         .profile-container {
             max-width: 500px;
             background: #f8fafc;
@@ -405,11 +417,20 @@ const contentArea = document.getElementById("contentArea");
 const registerMessage = document.getElementById("registerMessage");
 const loginMessage = document.getElementById("loginMessage");
 
-// Placeholder profile picture asset
 const defaultPfp = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
-let users = JSON.parse(localStorage.getItem("snapio_users")) || [];
-let currentUser = JSON.parse(localStorage.getItem("snapio_currentUser"));
+// Temporary placeholder for custom file uploads
+let base64ImageStorage = "";
+
+function getUsers() {
+    return JSON.parse(localStorage.getItem("snapio_users")) || [];
+}
+
+function getCurrentUser() {
+    return JSON.parse(localStorage.getItem("snapio_currentUser"));
+}
+
+let currentUser = getCurrentUser();
 
 if(currentUser){
     openDashboard();
@@ -428,20 +449,21 @@ function showLogin(){
 function register(){
     const username = document.getElementById("registerUsername").value.trim();
     const password = document.getElementById("registerPassword").value;
+    let localUsers = getUsers();
 
     if(username === "" || password === ""){
         registerMessage.innerHTML = "Fill in all fields";
         return;
     }
 
-    const exists = users.find(user => user.username.toLowerCase() === username.toLowerCase());
+    const exists = localUsers.find(user => user.username.toLowerCase() === username.toLowerCase());
 
     if(exists){
         registerMessage.innerHTML = "Username already taken";
         return;
     }
 
-    users.push({
+    localUsers.push({
         username,
         password,
         bio: "Hey there! I am using SNAPIO.",
@@ -450,17 +472,18 @@ function register(){
         requests: []
     });
 
-    localStorage.setItem("snapio_users", JSON.stringify(users));
+    localStorage.setItem("snapio_users", JSON.stringify(localUsers));
     registerMessage.style.color = "green";
-    registerMessage.innerHTML = "Account created! You can now sign in.";
+    registerMessage.innerHTML = "Account created! Loading login...";
     setTimeout(() => { showLogin(); }, 1200);
 }
 
 function login(){
     const username = document.getElementById("loginUsername").value.trim();
     const password = document.getElementById("loginPassword").value;
+    let localUsers = getUsers();
 
-    const user = users.find(u => u.username === username && u.password === password);
+    const user = localUsers.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
 
     if(!user){
         loginMessage.innerHTML = "Invalid username or password";
@@ -477,17 +500,14 @@ function openDashboard(){
     registerPage.classList.add("hidden");
     loginPage.classList.add("hidden");
     dashboard.classList.remove("hidden");
-    contentArea.innerHTML = `<h1>Welcome ${currentUser.username}</h1><p style='color: #666; margin-top:10px;'>Select an option from the navigation menu to begin.</p>`;
+    contentArea.innerHTML = `<h1>Welcome ${currentUser.username}</h1><p style='color: #666; margin-top:10px;'>Select an option from the menu to navigate.</p>`;
 }
 
-/* =========================================================
-   NEW FRIENDS PAGE SECTION
-   ========================================================= */
+/* FRIENDS SECTION */
 function showFriendsPage(){
-    const latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
-    const me = latestUsers.find(u => u.username === currentUser.username);
+    let localUsers = getUsers();
+    let me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
 
-    // Dynamic clean setup matching your exact structural flow guidelines
     contentArea.innerHTML = `
         <div class="page-title">Friends</div>
         <h3>Friends: ${me.friends ? me.friends.length : 0}</h3>
@@ -509,11 +529,11 @@ function showFriendsPage(){
         </div>
     `;
 
-    renderVisualFriends(me, latestUsers);
+    renderVisualFriends(me, localUsers);
     renderRequests();
 }
 
-function renderVisualFriends(me, latestUsers) {
+function renderVisualFriends(me, localUsers) {
     const container = document.getElementById("friendsVisualContainer");
     if (!container) return;
     container.innerHTML = "";
@@ -524,16 +544,15 @@ function renderVisualFriends(me, latestUsers) {
     }
 
     me.friends.forEach(friendName => {
-        // Find friend object data to display picture
-        const targetFriendObj = latestUsers.find(u => u.username === friendName);
+        const targetFriendObj = localUsers.find(u => u.username.toLowerCase() === friendName.toLowerCase());
         const pfpSrc = (targetFriendObj && targetFriendObj.pfp) ? targetFriendObj.pfp : defaultPfp;
 
         const friendNode = document.createElement("div");
         friendNode.className = "friend-user-node";
-        friendNode.onclick = () => { showTargetUserProfile(friendName); };
+        friendNode.onclick = () => { showTargetUserProfile(targetFriendObj ? targetFriendObj.username : friendName); };
         friendNode.innerHTML = `
             <img class="pfp-circle" src="${pfpSrc}" alt="pfp">
-            <span><b>${friendName}</b></span>
+            <span><b>${targetFriendObj ? targetFriendObj.username : friendName}</b></span>
         `;
         container.appendChild(friendNode);
     });
@@ -541,7 +560,7 @@ function renderVisualFriends(me, latestUsers) {
 
 function searchUser(){
     const username = document.getElementById("friendSearch").value.trim().toLowerCase();
-    const latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
+    let localUsers = getUsers();
     const searchResult = document.getElementById("searchResult");
 
     if(!username) {
@@ -549,7 +568,7 @@ function searchUser(){
         return;
     }
 
-    const foundUser = latestUsers.find(u => u.username.toLowerCase() === username);
+    const foundUser = localUsers.find(u => u.username.toLowerCase() === username);
 
     if(!foundUser){
         searchResult.innerHTML = "<p style='color: red;'>User not found</p>";
@@ -578,10 +597,10 @@ function searchUser(){
 }
 
 function sendRequest(targetUsername){
-    let latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
+    let localUsers = getUsers();
     const searchResult = document.getElementById("searchResult");
     
-    const targetUser = latestUsers.find(u => u.username === targetUsername);
+    const targetUser = localUsers.find(u => u.username.toLowerCase() === targetUsername.toLowerCase());
 
     if(!targetUser){
         searchResult.innerHTML = "<p style='color: red;'>Error sending request.</p>";
@@ -590,22 +609,22 @@ function sendRequest(targetUsername){
 
     if(!targetUser.requests) targetUser.requests = [];
 
-    const alreadySent = targetUser.requests.includes(currentUser.username);
+    const alreadySent = targetUser.requests.some(r => r.toLowerCase() === currentUser.username.toLowerCase());
 
     if(alreadySent){
-        searchResult.innerHTML = `<p style='color: orange;'>Request already pending with ${targetUsername}.</p>`;
+        searchResult.innerHTML = `<p style='color: orange;'>Request already pending with ${targetUser.username}.</p>`;
         return;
     }
 
     targetUser.requests.push(currentUser.username);
-    localStorage.setItem("snapio_users", JSON.stringify(latestUsers));
+    localStorage.setItem("snapio_users", JSON.stringify(localUsers));
     
-    searchResult.innerHTML = `<p style='color: green;'>Friend request sent to ${targetUsername}!</p>`;
+    searchResult.innerHTML = `<p style='color: green;'>Friend request sent to ${targetUser.username}!</p>`;
 }
 
 function renderRequests(){
-    let latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
-    const me = latestUsers.find(u => u.username === currentUser.username);
+    let localUsers = getUsers();
+    const me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
     const requestList = document.getElementById("requestList");
 
     if(!requestList) return;
@@ -630,55 +649,52 @@ function renderRequests(){
 }
 
 function acceptRequest(sender){
-    let latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
-    const me = latestUsers.find(u => u.username === currentUser.username);
-    const senderUser = latestUsers.find(u => u.username === sender);
+    let localUsers = getUsers();
+    const me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
+    const senderUser = localUsers.find(u => u.username.toLowerCase() === sender.toLowerCase());
 
     if(!me || !senderUser) return;
 
     if(!me.friends) me.friends = [];
     if(!senderUser.friends) senderUser.friends = [];
 
-    if(!me.friends.includes(sender)){
-        me.friends.push(sender);
+    if(!me.friends.some(f => f.toLowerCase() === sender.toLowerCase())){
+        me.friends.push(senderUser.username);
     }
 
-    if(!senderUser.friends.includes(currentUser.username)){
-        senderUser.friends.push(currentUser.username);
+    if(!senderUser.friends.some(f => f.toLowerCase() === me.username.toLowerCase())){
+        senderUser.friends.push(me.username);
     }
 
-    me.requests = me.requests.filter(req => req !== sender);
+    me.requests = me.requests.filter(req => req.toLowerCase() !== sender.toLowerCase());
 
-    localStorage.setItem("snapio_users", JSON.stringify(latestUsers));
-    currentUser = me;
+    localStorage.setItem("snapio_users", JSON.stringify(localUsers));
     localStorage.setItem("snapio_currentUser", JSON.stringify(me));
+    currentUser = me;
 
     showFriendsPage();
 }
 
 function declineRequest(sender){
-    let latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
-    const me = latestUsers.find(u => u.username === currentUser.username);
+    let localUsers = getUsers();
+    const me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
 
     if(!me) return;
 
-    me.requests = me.requests.filter(req => req !== sender);
+    me.requests = me.requests.filter(req => req.toLowerCase() !== sender.toLowerCase());
 
-    localStorage.setItem("snapio_users", JSON.stringify(latestUsers));
-    currentUser = me;
+    localStorage.setItem("snapio_users", JSON.stringify(localUsers));
     localStorage.setItem("snapio_currentUser", JSON.stringify(me));
+    currentUser = me;
 
     showFriendsPage();
 }
 
-/* =========================================================
-   PROFILE VIEW AND CUSTOMIZATION SECTION
-   ========================================================= */
+/* PROFILE SECTION */
 function showOwnProfile() {
-    let latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
-    const me = latestUsers.find(u => u.username === currentUser.username);
+    let localUsers = getUsers();
+    const me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
 
-    // Make sure data profiles stand accurate
     const currentPfp = me.pfp || defaultPfp;
     const currentBio = me.bio || "No bio set yet.";
     const totalFriends = me.friends ? me.friends.length : 0;
@@ -696,18 +712,25 @@ function showOwnProfile() {
 }
 
 function showCustomizeInterface() {
-    let latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
-    const me = latestUsers.find(u => u.username === currentUser.username);
+    let localUsers = getUsers();
+    const me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
+    base64ImageStorage = me.pfp || defaultPfp;
 
     contentArea.innerHTML = `
         <div class="page-title">Apply Changes</div>
         <div class="profile-container" style="text-align: left;">
-            <p style="margin-bottom: 15px; color: #555;">Make changes to your card data below, then save updates via the top button or the Apply button layout directly.</p>
+            <p style="margin-bottom: 15px; color: #555;">Update your information below, then tap Apply Updates.</p>
             
-            <label><b>Profile Picture URL</b></label>
-            <input id="editPfp" class="input" value="${me.pfp || defaultPfp}" placeholder="Paste image link">
+            <label><b>Profile Picture</b></label><br>
+            <div style="display:flex; align-items:center; gap: 15px; margin-top:8px;">
+                <img id="previewPfp" class="pfp-circle" src="${base64ImageStorage}" alt="preview">
+                <label class="file-upload-btn">
+                    Choose Photo File
+                    <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="processFilePfp(this)">
+                </label>
+            </div>
             
-            <label style="display:inline-block; margin-top:15px;"><b>Username</b></label>
+            <label style="display:inline-block; margin-top:20px;"><b>Username</b></label>
             <input id="editName" class="input" value="${me.username}" placeholder="Change username">
             
             <label style="display:inline-block; margin-top:15px;"><b>Bio Description</b></label>
@@ -722,9 +745,20 @@ function showCustomizeInterface() {
     `;
 }
 
+function processFilePfp(input) {
+    const file = input.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            base64ImageStorage = e.target.result;
+            document.getElementById("previewPfp").src = base64ImageStorage;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
 function applyProfileChanges() {
     const updatedName = document.getElementById("editName").value.trim();
-    const updatedPfp = document.getElementById("editPfp").value.trim();
     const updatedBio = document.getElementById("editBio").value.trim();
     const errorDiv = document.getElementById("editError");
 
@@ -733,50 +767,44 @@ function applyProfileChanges() {
         return;
     }
 
-    let latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
+    let localUsers = getUsers();
     
-    // Check name availability if user has changed their baseline username handle
     if (updatedName.toLowerCase() !== currentUser.username.toLowerCase()) {
-        const nameExists = latestUsers.find(u => u.username.toLowerCase() === updatedName.toLowerCase());
+        const nameExists = localUsers.find(u => u.username.toLowerCase() === updatedName.toLowerCase());
         if(nameExists) {
-            errorDiv.innerHTML = "This username alternative is already taken!";
+            errorDiv.innerHTML = "This username is already taken!";
             return;
         }
 
-        // Clean up references to old name in friends arrays and requests across other accounts
-        latestUsers.forEach(u => {
-            if(u.friends) u.friends = u.friends.map(f => f === currentUser.username ? updatedName : f);
-            if(u.requests) u.requests = u.requests.map(r => r === currentUser.username ? updatedName : r);
+        // Rename across other profiles' databases
+        localUsers.forEach(u => {
+            if(u.friends) u.friends = u.friends.map(f => f.toLowerCase() === currentUser.username.toLowerCase() ? updatedName : f);
+            if(u.requests) u.requests = u.requests.map(r => r.toLowerCase() === currentUser.username.toLowerCase() ? updatedName : r);
         });
     }
 
-    // Locate matching original database reference node
-    const userIndex = latestUsers.findIndex(u => u.username === currentUser.username);
+    const userIndex = localUsers.findIndex(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
     if(userIndex !== -1) {
-        latestUsers[userIndex].username = updatedName;
-        latestUsers[userIndex].pfp = updatedPfp || defaultPfp;
-        latestUsers[userIndex].bio = updatedBio;
+        localUsers[userIndex].username = updatedName;
+        localUsers[userIndex].pfp = base64ImageStorage;
+        localUsers[userIndex].bio = updatedBio;
 
-        localStorage.setItem("snapio_users", JSON.stringify(latestUsers));
+        localStorage.setItem("snapio_users", JSON.stringify(localUsers));
         
-        // Sync running logged-in current user context data state
-        currentUser = latestUsers[userIndex];
+        currentUser = localUsers[userIndex];
         localStorage.setItem("snapio_currentUser", JSON.stringify(currentUser));
         
-        // Return view panel dashboard
         showOwnProfile();
     }
 }
 
-/* =========================================================
-   EXTERNAL ACCESSIBLE PROFILES LOOKUP (FRIEND PROFILES VIEW)
-   ========================================================= */
+/* EXTERNAL PROFILES */
 function showTargetUserProfile(targetUsername) {
-    let latestUsers = JSON.parse(localStorage.getItem("snapio_users")) || [];
-    const matchedUser = latestUsers.find(u => u.username === targetUsername);
+    let localUsers = getUsers();
+    const matchedUser = localUsers.find(u => u.username.toLowerCase() === targetUsername.toLowerCase());
 
     if(!matchedUser) {
-        alert("Could not load user data profiles correctly.");
+        alert("Could not load user profile.");
         return;
     }
 
@@ -787,7 +815,7 @@ function showTargetUserProfile(targetUsername) {
     contentArea.innerHTML = `
         <div class="page-title">${matchedUser.username}'s Profile</div>
         <div class="profile-container">
-            <img class="pfp-circle-large" src="${currentPfp}" alt="User Profile Image">
+            <img class="pfp-circle-large" src="${currentPfp}" alt="Profile Image">
             <h2>${matchedUser.username}</h2>
             <p class="bio-text">"${currentBio}"</p>
             <p style="margin-bottom: 20px; font-weight: bold; color:#2563eb;">Friends count: ${totalFriends}</p>
