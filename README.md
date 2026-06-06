@@ -67,7 +67,7 @@
         }
 
         .create-btn{
-            background: #2563eb;
+            background: #10b981;
             color: white;
         }
 
@@ -187,7 +187,7 @@
             background: #e2e8f0;
             padding: 5px;
             border-radius: 10px;
-            max-width: 400px;
+            max-width: 500px;
         }
 
         .filter-tab-btn {
@@ -261,7 +261,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            cursor: pointer;
         }
 
         .post-media-display {
@@ -312,22 +311,14 @@
             color: #374151;
         }
 
-        /* USER DISPLAY STYLES */
-        .pfp-circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: #cbd5e1;
-        }
-
-        .pfp-circle-large {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: #cbd5e1;
-            margin-bottom: 15px;
+        /* PROFILE SCREEN CONTROLS */
+        .profile-container {
+            max-width: 500px;
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 25px auto 30px auto;
+            text-align: center;
         }
 
         .action-btn-styled {
@@ -353,95 +344,25 @@
             margin-top: 8px;
         }
 
-        /* PROFILE SCREEN CONTROLS */
-        .profile-container {
-            max-width: 500px;
-            background: #f8fafc;
-            border-radius: 20px;
-            padding: 30px;
-            margin: 25px auto 30px auto;
-            text-align: center;
-        }
-
-        .bio-text {
-            color: #4b5563;
-            margin: 10px 0 20px 0;
-            font-style: italic;
-        }
-
-        .stats-row {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            font-weight: bold;
-            color: #2563eb;
-            margin-bottom: 20px;
-            font-size: 16px;
-        }
-
-        .profile-posts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .grid-media-item {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 10px;
-            background: #000;
-        }
-
-        /* MOBILE MEDIA QUERIES */
         @media (max-width: 768px) {
-            #dashboard {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                padding: 15px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                border-bottom: 1px solid #1f2937;
-            }
-
-            .sidebar-logo {
-                margin-bottom: 15px;
-                font-size: 28px;
-            }
-
-            .sidebar-menu {
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 8px;
-                width: 100%;
-                margin-bottom: 10px;
-            }
-
-            .sidebar-item {
-                margin-top: 0;
-                padding: 10px 15px;
-                font-size: 14px;
-                background: #1f2937;
-            }
-
-            .content {
-                padding: 20px 15px;
-            }
+            #dashboard { flex-direction: column; }
+            .sidebar { width: 100%; padding: 15px; align-items: center; border-bottom: 1px solid #1f2937; }
+            .sidebar-logo { margin-bottom: 15px; font-size: 28px; }
+            .sidebar-menu { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 8px; width: 100%; margin-bottom: 10px; }
+            .sidebar-item { margin-top: 0; padding: 10px 15px; font-size: 14px; background: #1f2937; }
+            .content { padding: 20px 15px; }
         }
     </style>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
 <div id="landingPage">
     <div class="landing-card">
         <div class="logo">SNAPIO</div>
-        <div class="subtitle">Connect with friends.</div>
+        <div class="subtitle">Connect regionally with phone integration.</div>
         <button class="main-btn create-btn" onclick="showRegister()">Create Account</button>
         <button class="main-btn login-btn" onclick="showLogin()">Sign In</button>
     </div>
@@ -450,7 +371,8 @@
 <div id="registerPage" class="auth-page hidden">
     <div class="auth-box">
         <h1 class="auth-title">Create Account</h1>
-        <input id="registerUsername" class="input" placeholder="Username">
+        <input id="registerPhone" class="input" type="tel" placeholder="Phone Number (e.g., +31612345678)">
+        <input id="registerUsername" class="input" placeholder="Display Name / Username">
         <input id="registerPassword" class="input" type="password" placeholder="Password">
         <button class="main-btn create-btn" onclick="register()">Create Account</button>
         <div id="registerMessage" style="margin-top: 10px; color: red; text-align: center;"></div>
@@ -460,7 +382,7 @@
 <div id="loginPage" class="auth-page hidden">
     <div class="auth-box">
         <h1 class="auth-title">Sign In</h1>
-        <input id="loginUsername" class="input" placeholder="Username">
+        <input id="loginPhone" class="input" type="tel" placeholder="Phone Number (e.g., +31612345678)">
         <input id="loginPassword" class="input" type="password" placeholder="Password">
         <button class="main-btn login-btn" onclick="login()">Sign In</button>
         <div id="loginMessage" style="margin-top: 10px; color: red; text-align: center;"></div>
@@ -480,11 +402,25 @@
         <div class="sidebar-item logout-sidebar-btn" onclick="logoutUser()">Switch Account</div>
     </div>
     <div class="content" id="contentArea">
-        <h1>Welcome to SNAPIO</h1>
+        <h1>Loading Content Hub...</h1>
     </div>
 </div>
 
 <script>
+// --- PASTE YOUR FIREBASE WEB APP CONFIG CONFIGURATION BOX LOGISTICS HERE ---
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+// Initialize Firebase Real-Time Ecosystem Connections
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 // DOM Bindings
 const landingPage = document.getElementById("landingPage");
 const registerPage = document.getElementById("registerPage");
@@ -495,51 +431,17 @@ const registerMessage = document.getElementById("registerMessage");
 const loginMessage = document.getElementById("loginMessage");
 
 const defaultPfp = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-let base64ImageStorage = "";
 let base64PostMediaStorage = "";
 let postFileTypeStorage = ""; 
-let currentFeedScope = "global"; // "global" or "regional"
+let currentFeedScope = "allPhoneUsers"; // Options: "allPhoneUsers" or "myCountryCode"
+let currentUser = JSON.parse(sessionStorage.getItem("snapio_active_user")) || null;
 
-// Helper function to dynamically pull user's regional configuration context
-function getUserCurrentRegion() {
-    try {
-        return Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown";
-    } catch(e) {
-        return "Unknown";
-    }
-}
-
-// Clean readable label context mapping
-function getCleanRegionLabel(timeZoneStr) {
-    if (timeZoneStr.includes("Amsterdam") || timeZoneStr.includes("Brussels") || timeZoneStr.includes("Berlin")) {
-        return "Netherlands / Europe Region";
-    }
-    if (timeZoneStr.includes("/")) {
-        return timeZoneStr.split("/")[1].replace("_", " ");
-    }
-    return timeZoneStr;
-}
-
-// Databases
-function getUsers() {
-    return JSON.parse(localStorage.getItem("snapio_users")) || [];
-}
-
-function getPosts() {
-    return JSON.parse(localStorage.getItem("snapio_posts")) || [];
-}
-
-function getCurrentUser() {
-    return JSON.parse(localStorage.getItem("snapio_currentUser"));
-}
-
-let currentUser = getCurrentUser();
-
-if(currentUser){
+if (currentUser) {
     openDashboard();
 }
 
 function showRegister(){
+    document.getElementById("registerPhone").value = "";
     document.getElementById("registerUsername").value = "";
     document.getElementById("registerPassword").value = "";
     registerMessage.innerHTML = "";
@@ -549,7 +451,7 @@ function showRegister(){
 }
 
 function showLogin(){
-    document.getElementById("loginUsername").value = "";
+    document.getElementById("loginPhone").value = "";
     document.getElementById("loginPassword").value = "";
     loginMessage.innerHTML = "";
     landingPage.classList.add("hidden");
@@ -558,65 +460,60 @@ function showLogin(){
 }
 
 function logoutUser() {
-    localStorage.removeItem("snapio_currentUser");
+    sessionStorage.removeItem("snapio_active_user");
     currentUser = null;
     dashboard.classList.add("hidden");
     landingPage.classList.remove("hidden");
 }
 
 function register(){
+    const phone = document.getElementById("registerPhone").value.trim();
     const username = document.getElementById("registerUsername").value.trim();
     const password = document.getElementById("registerPassword").value;
-    let localUsers = getUsers();
 
-    if(username === "" || password === ""){
+    if(!phone || !username || !password){
         registerMessage.style.color = "red";
         registerMessage.innerHTML = "Fill in all fields";
         return;
     }
 
-    const exists = localUsers.find(user => user.username.toLowerCase() === username.toLowerCase());
-
-    if(exists){
-        registerMessage.style.color = "red";
-        registerMessage.innerHTML = "Username already taken";
-        return;
-    }
-
-    localUsers.push({
-        username,
-        password,
-        bio: "Hey there! I am using SNAPIO.",
-        pfp: defaultPfp,
-        friends: [],
-        requests: [],
-        followers: [],  
-        following: [],  
-        likesReceived: 0
+    // Verify if phone is already inside database collection infrastructure
+    db.collection("users").doc(phone).get().then((doc) => {
+        if (doc.exists) {
+            registerMessage.style.color = "red";
+            registerMessage.innerHTML = "Phone number already registered!";
+        } else {
+            const newUserObj = { phone, username, password, pfp: defaultPfp };
+            db.collection("users").doc(phone).set(newUserObj).then(() => {
+                registerMessage.style.color = "green";
+                registerMessage.innerHTML = "Account created! Loading login...";
+                setTimeout(() => { showLogin(); }, 1200);
+            });
+        }
     });
-
-    localStorage.setItem("snapio_users", JSON.stringify(localUsers));
-    registerMessage.style.color = "green";
-    registerMessage.innerHTML = "Account created! Loading login...";
-    setTimeout(() => { showLogin(); }, 1200);
 }
 
 function login(){
-    const username = document.getElementById("loginUsername").value.trim();
+    const phone = document.getElementById("loginPhone").value.trim();
     const password = document.getElementById("loginPassword").value;
-    let localUsers = getUsers();
 
-    const user = localUsers.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
-
-    if(!user){
-        loginMessage.style.color = "red";
-        loginMessage.innerHTML = "Invalid username or password";
+    if(!phone || !password) {
+        loginMessage.innerHTML = "Please type values.";
         return;
     }
 
-    localStorage.setItem("snapio_currentUser", JSON.stringify(user));
-    currentUser = user;
-    openDashboard();
+    db.collection("users").doc(phone).get().then((doc) => {
+        if(doc.exists && doc.data().password === password) {
+            currentUser = doc.data();
+            sessionStorage.setItem("snapio_active_user", JSON.stringify(currentUser));
+            openDashboard();
+        } else {
+            loginMessage.style.color = "red";
+            loginMessage.innerHTML = "Invalid phone structure profile configuration credentials.";
+        }
+    }).catch(() => {
+        loginMessage.innerHTML = "Authentication cloud connectivity failure.";
+    });
 }
 
 function openDashboard(){
@@ -627,16 +524,14 @@ function openDashboard(){
     showForYouPage();
 }
 
-/* POST MEDIA TAB */
 function showPostMediaPage() {
     base64PostMediaStorage = "";
     postFileTypeStorage = "";
-    const currentDetectedRegion = getUserCurrentRegion();
 
     contentArea.innerHTML = `
-        <div class="page-title">Post Media</div>
+        <div class="page-title">Publish Media</div>
         <div style="max-width: 500px;">
-            <p style="color:#555; margin-bottom: 15px;">Upload photos or videos, configure availability rules, and broadcast to the platform ecosystem instantly.</p>
+            <p style="color:#555; margin-bottom: 15px;">Broadcast media out to all verification systems securely tagged under account metadata.</p>
             
             <div class="media-upload-box">
                 <label class="file-upload-btn" style="background:#2563eb;">
@@ -646,21 +541,10 @@ function showPostMediaPage() {
                 <div id="postMediaPreviewContainer" class="preview-container-box hidden"></div>
             </div>
 
-            <label style="display:inline-block; margin-top:20px;"><b>Post Title / Name</b></label>
-            <input id="postTitleInput" class="input" placeholder="Enter a descriptive post name...">
+            <label style="display:inline-block; margin-top:20px;"><b>Post Headline Caption</b></label>
+            <input id="postTitleInput" class="input" placeholder="Say something about this media asset...">
 
-            <label style="display:inline-block; margin-top:15px;"><b>Visibility Settings</b></label>
-            <select id="postVisibilityInput" class="select">
-                <option value="public">Public (Everyone can view)</option>
-                <option value="friends">Friends Only (Visible to your friend list)</option>
-                <option value="private">Private (Only you can view)</option>
-            </select>
-
-            <div style="margin-top: 15px; background: #e0f2fe; padding: 12px; border-radius: 8px; color: #0369a1; font-size:14px;">
-                📍 <b>Auto-tagged Location:</b> ${getCleanRegionLabel(currentDetectedRegion)}
-            </div>
-
-            <button class="action-btn-styled" style="width: 100%; margin-top:25px; background:#10b981;" onclick="submitNewPost()">Publish Post</button>
+            <button class="action-btn-styled" style="width: 100%; margin-top:25px; background:#10b981;" onclick="submitNewPost()">Publish to Network</button>
             <div id="uploadError" style="margin-top:10px; color:red; text-align:center; font-weight:bold;"></div>
         </div>
     `;
@@ -669,89 +553,70 @@ function showPostMediaPage() {
 function processPostFile(input) {
     const file = input.files[0];
     const previewContainer = document.getElementById("postMediaPreviewContainer");
-    
     if (!file || !previewContainer) return;
 
-    if (file.type.startsWith("image/")) {
-        postFileTypeStorage = "image";
-    } else if (file.type.startsWith("video/")) {
-        postFileTypeStorage = "video";
-    } else {
-        alert("Unsupported file type! Please select an image or video file.");
-        return;
-    }
+    postFileTypeStorage = file.type.startsWith("image/") ? "image" : "video";
 
     const reader = new FileReader();
     reader.onload = function(e) {
         base64PostMediaStorage = e.target.result;
         previewContainer.classList.remove("hidden");
-        
-        if (postFileTypeStorage === "image") {
-            previewContainer.innerHTML = `<img src="${base64PostMediaStorage}" alt="Post Preview">`;
-        } else {
-            previewContainer.innerHTML = `<video src="${base64PostMediaStorage}" controls muted></video>`;
-        }
+        previewContainer.innerHTML = postFileTypeStorage === "image" 
+            ? `<img src="${base64PostMediaStorage}">` 
+            : `<video src="${base64PostMediaStorage}" controls muted></video>`;
     };
     reader.readAsDataURL(file);
 }
 
 function submitNewPost() {
     const title = document.getElementById("postTitleInput").value.trim();
-    const visibility = document.getElementById("postVisibilityInput").value;
     const errorDiv = document.getElementById("uploadError");
 
-    if (!base64PostMediaStorage) {
-        errorDiv.innerHTML = "Please select a photo or video file first!";
-        return;
-    }
-    if (!title) {
-        errorDiv.innerHTML = "Please provide a name/title for your post!";
+    if (!base64PostMediaStorage || !title) {
+        errorDiv.innerHTML = "Please include missing form submission values!";
         return;
     }
 
-    let localPosts = getPosts();
-    const uniquePostId = "post_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
-    const postRegionTag = getUserCurrentRegion();
-
-    localPosts.push({
-        id: uniquePostId,
+    const newPost = {
         author: currentUser.username,
+        authorPhone: currentUser.phone, 
         title: title,
         media: base64PostMediaStorage,
         type: postFileTypeStorage,
-        visibility: visibility,
-        region: postRegionTag, // Attach country region signature context
-        likes: [], 
-        comments: [], 
+        likes: [],
         timestamp: Date.now()
-    });
+    };
 
-    localStorage.setItem("snapio_posts", JSON.stringify(localPosts));
-    showForYouPage(); 
+    db.collection("posts").add(newPost).then(() => {
+        showForYouPage();
+    }).catch(err => {
+        errorDiv.innerHTML = "Upload failure matrix: " + err;
+    });
 }
 
-/* FOR YOU TAB WITH REGIONAL SCOPING FILTER */
 function showForYouPage() {
-    const myDetectedRegion = getUserCurrentRegion();
-    const cleanLabel = getCleanRegionLabel(myDetectedRegion);
+    // Dynamically calculate Country Code Prefix (e.g., first 3 characters "+31")
+    const structuralPrefix = currentUser.phone.startsWith("+") 
+        ? currentUser.phone.substring(0, 3) 
+        : currentUser.phone.substring(0, 2);
 
     contentArea.innerHTML = `
-        <div class="page-title">For You Feed</div>
+        <div class="page-title">Community Feed</div>
         
         <div class="feed-filter-tabs">
-            <button id="tabBtnGlobal" class="filter-tab-btn ${currentFeedScope === 'global' ? 'active' : ''}" onclick="changeFeedScope('global')">Global Stream</button>
-            <button id="tabBtnRegional" class="filter-tab-btn ${currentFeedScope === 'regional' ? 'active' : ''}" onclick="changeFeedScope('regional')">📍 Only ${cleanLabel}</button>
+            <button id="tabBtnGlobal" class="filter-tab-btn ${currentFeedScope === 'allPhoneUsers' ? 'active' : ''}" onclick="changeFeedScope('allPhoneUsers')">All Phone Accounts</button>
+            <button id="tabBtnRegional" class="filter-tab-btn ${currentFeedScope === 'myCountryCode' ? 'active' : ''}" onclick="changeFeedScope('myCountryCode')">📍 Area Prefix (${structuralPrefix})</button>
         </div>
 
-        <div class="feed-container" id="feedPostsStream"></div>
+        <div class="feed-container" id="feedPostsStream">Loading Live Stream...</div>
     `;
     renderFeedStream();
 }
 
 function changeFeedScope(newScope) {
     currentFeedScope = newScope;
-    document.getElementById("tabBtnGlobal").classList.toggle("active", newScope === 'global');
-    document.getElementById("tabBtnRegional").classList.toggle("active", newScope === 'regional');
+    document.getElementById("tabBtnGlobal").classList.toggle("active", newScope === 'allPhoneUsers');
+    document.getElementById("tabBtnRegional").classList.toggle("active", newScope === 'myCountryCode');
     renderFeedStream();
 }
 
@@ -759,411 +624,96 @@ function renderFeedStream() {
     const streamContainer = document.getElementById("feedPostsStream");
     if (!streamContainer) return;
 
-    let localPosts = getPosts();
-    let localUsers = getUsers();
-    let me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
-    const deviceRegion = getUserCurrentRegion();
-
-    localPosts.sort((a, b) => b.timestamp - a.timestamp);
-
-    // Apply baseline privacy rules filtering logic first
-    let visiblePosts = localPosts.filter(post => {
-        if (post.visibility === "public") return true;
-        if (post.author.toLowerCase() === currentUser.username.toLowerCase()) return true;
-        if (post.visibility === "friends") {
-            if (me && me.friends && me.friends.some(f => f.toLowerCase() === post.author.toLowerCase())) {
-                return true;
-            }
-        }
-        return false;
-    });
-
-    // Layer regional matching constraint if requested
-    if (currentFeedScope === "regional") {
-        visiblePosts = visiblePosts.filter(post => {
-            // Check matching region properties or baseline fallbacks
-            return (post.region === deviceRegion || (!post.region && deviceRegion === "Europe/Amsterdam"));
+    db.collection("posts").orderBy("timestamp", "desc").get().then((querySnapshot) => {
+        let loadedPosts = [];
+        querySnapshot.forEach((doc) => {
+            let pData = doc.data();
+            pData.id = doc.id;
+            loadedPosts.push(pData);
         });
-    }
 
-    if (visiblePosts.length === 0) {
-        streamContainer.innerHTML = `<p style='text-align:center; color:#888; margin-top:40px;'>No shared posts found matching this context view stream criteria inside the device storage.</p>`;
-        return;
-    }
+        // Filter 1: Enforce presence of registration database metadata signatures 
+        let filteredStream = loadedPosts.filter(p => p.authorPhone && p.authorPhone.trim() !== "");
 
-    streamContainer.innerHTML = "";
-    visiblePosts.forEach(post => {
-        const authorObj = localUsers.find(u => u.username.toLowerCase() === post.author.toLowerCase());
-        const authorPfp = (authorObj && authorObj.pfp) ? authorObj.pfp : defaultPfp;
-        
-        const hasLiked = post.likes && post.likes.some(u => u.toLowerCase() === currentUser.username.toLowerCase());
-        const likeBtnClass = hasLiked ? "post-btn liked" : "post-btn";
-
-        const cardElement = document.createElement("div");
-        cardElement.className = "post-card";
-        
-        let mediaTag = "";
-        if (post.type === "video") {
-            mediaTag = `<video class="post-media-display" src="${post.media}" controls></video>`;
-        } else {
-            mediaTag = `<img class="post-media-display" src="${post.media}" alt="Post Content">`;
+        // Filter 2: Optional validation check against phone country dialing signature values
+        if (currentFeedScope === "myCountryCode") {
+            const myPrefix = currentUser.phone.startsWith("+") ? currentUser.phone.substring(0, 3) : currentUser.phone.substring(0, 2);
+            filteredStream = filteredStream.filter(p => p.authorPhone.startsWith(myPrefix));
         }
 
-        let commentsMarkup = "";
-        if (post.comments && post.comments.length > 0) {
-            post.comments.forEach(c => {
-                commentsMarkup += `<div class="comment-item"><b>${c.commenter}:</b> ${c.text}</div>`;
-            });
+        if (filteredStream.length === 0) {
+            streamContainer.innerHTML = `<p style='text-align:center; color:#888; margin-top:40px;'>No verified mobile network posts found inside view matrix.</p>`;
+            return;
         }
 
-        const displayRegion = post.region ? getCleanRegionLabel(post.region) : "Global Connection Area";
+        streamContainer.innerHTML = "";
+        filteredStream.forEach(post => {
+            const cardElement = document.createElement("div");
+            cardElement.className = "post-card";
 
-        cardElement.innerHTML = `
-            <div class="post-header">
-                <div class="post-user-details" onclick="showTargetUserProfile('${post.author}')">
-                    <img class="pfp-circle" src="${authorPfp}" alt="pfp">
-                    <div>
-                        <strong>${post.author}</strong>
-                        <div style="font-size:12px; color:#888;">${post.title}</div>
+            let assetTag = post.type === "video" 
+                ? `<video class="post-media-display" src="${post.media}" controls></video>` 
+                : `<img class="post-media-display" src="${post.media}">`;
+
+            const hasLiked = post.likes && post.likes.includes(currentUser.phone);
+            const likeClass = hasLiked ? "post-btn liked" : "post-btn";
+
+            cardElement.innerHTML = `
+                <div class="post-header">
+                    <div class="post-user-details">
+                        <img class="pfp-circle" src="${defaultPfp}">
+                        <div>
+                            <strong>${post.author}</strong>
+                            <div style="font-size:12px; color:#6b7280;">📱 ${post.authorPhone}</div>
+                        </div>
                     </div>
                 </div>
-                <div style="text-align: right; font-size:11px; color: #94a3b8;">
-                    <div>📍 ${displayRegion}</div>
-                    <div style="text-transform: capitalize; margin-top:2px;">${post.visibility}</div>
+                <p style="margin-bottom:12px; color:#1f2937;">${post.title}</p>
+                ${assetTag}
+                <div class="post-actions">
+                    <button class="${likeClass}" onclick="toggleLikePost('${post.id}')">
+                        ♥ <span>${post.likes ? post.likes.length : 0}</span>
+                    </button>
                 </div>
-            </div>
-            
-            ${mediaTag}
-
-            <div class="post-actions">
-                <button class="${likeBtnClass}" onclick="toggleLikePost('${post.id}')">
-                    ♥ <span>${post.likes ? post.likes.length : 0}</span>
-                </button>
-            </div>
-
-            <div class="comment-section">
-                <div style="margin-bottom:10px; max-height: 120px; overflow-y:auto;">
-                    ${commentsMarkup}
-                </div>
-                <div style="display:flex; gap:8px;">
-                    <input id="comment_input_${post.id}" class="input" style="padding:8px 12px; font-size:13px; margin-top:0;" placeholder="Add a comment...">
-                    <button class="action-btn-styled" style="padding:8px 14px; font-size:13px;" onclick="submitComment('${post.id}')">Reply</button>
-                </div>
-            </div>
-        `;
-        streamContainer.appendChild(cardElement);
+            `;
+            streamContainer.appendChild(cardElement);
+        });
+    }).catch(err => {
+        streamContainer.innerHTML = "Database operational loading error: " + err;
     });
 }
 
 function toggleLikePost(postId) {
-    let localPosts = getPosts();
-    const post = localPosts.find(p => p.id === postId);
-    if (!post) return;
-
-    if (!post.likes) post.likes = [];
-
-    const myIndex = post.likes.findIndex(u => u.toLowerCase() === currentUser.username.toLowerCase());
-    if (myIndex === -1) {
-        post.likes.push(currentUser.username);
-    } else {
-        post.likes.splice(myIndex, 1);
-    }
-
-    localStorage.setItem("snapio_posts", JSON.stringify(localPosts));
-    recalculateTotalLikesReceived();
-    renderFeedStream();
-}
-
-function submitComment(postId) {
-    const inputElement = document.getElementById(`comment_input_${postId}`);
-    if (!inputElement) return;
-
-    const text = inputElement.value.trim();
-    if (!text) return;
-
-    let localPosts = getPosts();
-    const post = localPosts.find(p => p.id === postId);
-    if (!post) return;
-
-    if (!post.comments) post.comments = [];
-    post.comments.push({
-        commenter: currentUser.username,
-        text: text
-    });
-
-    localStorage.setItem("snapio_posts", JSON.stringify(localPosts));
-    inputElement.value = "";
-    renderFeedStream();
-}
-
-function recalculateTotalLikesReceived() {
-    let localUsers = getUsers();
-    let localPosts = getPosts();
-
-    localUsers.forEach(user => {
-        let count = 0;
-        localPosts.forEach(post => {
-            if (post.author.toLowerCase() === user.username.toLowerCase()) {
-                if (post.likes) count += post.likes.length;
+    const postRef = db.collection("posts").doc(postId);
+    db.runTransaction((transaction) => {
+        return transaction.get(postRef).then((sfDoc) => {
+            if (!sfDoc.exists) return;
+            let currentLikesArray = sfDoc.data().likes || [];
+            const userIndex = currentLikesArray.indexOf(currentUser.phone);
+            
+            if (userIndex === -1) {
+                currentLikesArray.push(currentUser.phone);
+            } else {
+                currentLikesArray.splice(userIndex, 1);
             }
+            transaction.update(postRef, { likes: currentLikesArray });
         });
-        user.likesReceived = count;
+    }).then(() => {
+        renderFeedStream();
     });
-
-    localStorage.setItem("snapio_users", JSON.stringify(localUsers));
 }
 
-/* PROFILE TAB */
 function showOwnProfile() {
-    recalculateTotalLikesReceived();
-    let localUsers = getUsers();
-    let localPosts = getPosts();
-    
-    const me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
-
-    const currentPfp = me.pfp || defaultPfp;
-    const currentBio = me.bio || "No bio set yet.";
-
-    const myOwnPosts = localPosts.filter(p => p.author.toLowerCase() === currentUser.username.toLowerCase());
-    const totalPostsCount = myOwnPosts.length;
-    const totalLikesCount = me.likesReceived || 0;
-    const totalFollowersCount = me.followers ? me.followers.length : 0;
-
     contentArea.innerHTML = `
-        <div class="page-title">My Profile</div>
+        <div class="page-title">Account Details</div>
         <div class="profile-container">
-            <img class="pfp-circle-large" src="${currentPfp}" alt="Profile Picture">
-            <h2>${me.username}</h2>
-            <p class="bio-text">"${currentBio}"</p>
-            
-            <div class="stats-row">
-                <span>Posts: ${totalPostsCount}</span>
-                <span>Likes: ${totalLikesCount}</span>
-                <span>Followers: ${totalFollowersCount}</span>
-            </div>
-
-            <button class="action-btn-styled" onclick="showCustomizeInterface()">Customize Profile</button>
-            
-            <h3 style="margin-top: 30px; text-align: left; border-bottom: 1px solid #e2e8f0; padding-bottom:8px;">My Uploaded Media</h3>
-            <div class="profile-posts-grid" id="profileGridContainer"></div>
+            <img class="pfp-circle" src="${defaultPfp}" style="width:100px; height:100px; margin-bottom:15px;">
+            <h2>${currentUser.username}</h2>
+            <p style="color:#4b5563; margin-top:5px; font-weight:bold;">Verified Phone ID: ${currentUser.phone}</p>
+            <p style="font-size:13px; color:#9ca3af; margin-top:10px;">Authenticated cloud storage profile active node.</p>
         </div>
     `;
-
-    const gridContainer = document.getElementById("profileGridContainer");
-    if (myOwnPosts.length === 0) {
-        gridContainer.innerHTML = "<p style='color:#888; grid-column: 1/-1; padding:20px;'>You haven't posted any media assets yet.</p>";
-    } else {
-        myOwnPosts.forEach(post => {
-            if (post.type === "video") {
-                gridContainer.innerHTML += `<video class="grid-media-item" src="${post.media}" muted preload="metadata"></video>`;
-            } else {
-                gridContainer.innerHTML += `<img class="grid-media-item" src="${post.media}" alt="Grid Asset">`;
-            }
-        });
-    }
-}
-
-function showCustomizeInterface() {
-    let localUsers = getUsers();
-    const me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
-    base64ImageStorage = me.pfp || defaultPfp;
-
-    contentArea.innerHTML = `
-        <div class="page-title">Apply Changes</div>
-        <div class="profile-container" style="text-align: left;">
-            <p style="margin-bottom: 15px; color: #555;">Update your information below, then tap Apply Updates.</p>
-            
-            <label><b>Profile Picture</b></label><br>
-            <div style="display:flex; align-items:center; gap: 15px; margin-top:8px;">
-                <img id="previewPfp" class="pfp-circle" src="${base64ImageStorage}" alt="preview">
-                <label class="file-upload-btn">
-                    Choose Photo File
-                    <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="processFilePfp(this)">
-                </label>
-            </div>
-            
-            <label style="display:inline-block; margin-top:20px;"><b>Username</b></label>
-            <input id="editName" class="input" value="${me.username}" placeholder="Change username">
-            
-            <label style="display:inline-block; margin-top:15px;"><b>Bio Description</b></label>
-            <input id="editBio" class="input" value="${me.bio || ''}" placeholder="Tell us about yourself">
-            
-            <div style="margin-top: 25px; display:flex; gap: 10px;">
-                <button class="action-btn-styled" style="background:#10b981; flex: 1;" onclick="applyProfileChanges()">Apply Updates</button>
-                <button class="action-btn-styled" style="background:#6b7280;" onclick="showOwnProfile()">Cancel</button>
-            </div>
-            <div id="editError" style="margin-top:10px; color:red; text-align:center;"></div>
-        </div>
-    `;
-}
-
-function processFilePfp(input) {
-    const file = input.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            base64ImageStorage = e.target.result;
-            document.getElementById("previewPfp").src = base64ImageStorage;
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-function applyProfileChanges() {
-    const updatedName = document.getElementById("editName").value.trim();
-    const updatedBio = document.getElementById("editBio").value.trim();
-    const errorDiv = document.getElementById("editError");
-
-    if(!updatedName) {
-        errorDiv.innerHTML = "Username cannot be empty!";
-        return;
-    }
-
-    let localUsers = getUsers();
-    let localPosts = getPosts();
-    
-    if (updatedName.toLowerCase() !== currentUser.username.toLowerCase()) {
-        const nameExists = localUsers.find(u => u.username.toLowerCase() === updatedName.toLowerCase());
-        if(nameExists) {
-            errorDiv.innerHTML = "This username is already taken!";
-            return;
-        }
-
-        localPosts.forEach(p => {
-            if (p.author.toLowerCase() === currentUser.username.toLowerCase()) {
-                p.author = updatedName;
-            }
-            if (p.likes) {
-                p.likes = p.likes.map(u => u.toLowerCase() === currentUser.username.toLowerCase() ? updatedName : u);
-            }
-            if (p.comments) {
-                p.comments.forEach(c => {
-                    if (c.commenter.toLowerCase() === currentUser.username.toLowerCase()) c.commenter = updatedName;
-                });
-            }
-        });
-
-        localUsers.forEach(u => {
-            if (u.followers) u.followers = u.followers.map(x => x.toLowerCase() === currentUser.username.toLowerCase() ? updatedName : x);
-            if (u.following) u.following = u.following.map(x => x.toLowerCase() === currentUser.username.toLowerCase() ? updatedName : x);
-            if (u.friends) u.friends = u.friends.map(x => x.toLowerCase() === currentUser.username.toLowerCase() ? updatedName : x);
-            if (u.requests) u.requests = u.requests.map(x => x.toLowerCase() === currentUser.username.toLowerCase() ? updatedName : x);
-        });
-
-        localStorage.setItem("snapio_posts", JSON.stringify(localPosts));
-    }
-
-    const userIndex = localUsers.findIndex(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
-    if(userIndex !== -1) {
-        localUsers[userIndex].username = updatedName;
-        localUsers[userIndex].pfp = base64ImageStorage;
-        localUsers[userIndex].bio = updatedBio;
-
-        localStorage.setItem("snapio_users", JSON.stringify(localUsers));
-        
-        currentUser = localUsers[userIndex];
-        localStorage.setItem("snapio_currentUser", JSON.stringify(currentUser));
-        
-        showOwnProfile();
-    }
-}
-
-/* EXTERNAL ACCESSIBLE PROFILES LOOKUP */
-function showTargetUserProfile(targetUsername) {
-    if (targetUsername.toLowerCase() === currentUser.username.toLowerCase()) {
-        showOwnProfile();
-        return;
-    }
-
-    recalculateTotalLikesReceived();
-    let localUsers = getUsers();
-    let localPosts = getPosts();
-
-    const user = localUsers.find(u => u.username.toLowerCase() === targetUsername.toLowerCase());
-    if(!user) {
-        alert("Could not load user profile properly.");
-        return;
-    }
-
-    if (!user.followers) user.followers = [];
-    
-    const me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
-    const isFollowing = user.followers.some(x => x.toLowerCase() === currentUser.username.toLowerCase());
-
-    const followBtnText = isFollowing ? "Unfollow" : "Follow User";
-    const followBtnColor = isFollowing ? "#ef4444" : "#2563eb";
-
-    const targetUserPosts = localPosts.filter(p => {
-        if (p.author.toLowerCase() !== user.username.toLowerCase()) return false;
-        if (p.visibility === "public") return true;
-        if (p.visibility === "friends" && me && me.friends && me.friends.some(f => f.toLowerCase() === user.username.toLowerCase())) {
-            return true;
-        }
-        return false;
-    });
-
-    contentArea.innerHTML = `
-        <div class="page-title">${user.username}'s Profile</div>
-        <div class="profile-container">
-            <img class="pfp-circle-large" src="${user.pfp || defaultPfp}" alt="Profile Image">
-            <h2>${user.username}</h2>
-            <p class="bio-text">"${user.bio || 'No status bio set yet.'}"</p>
-            
-            <div class="stats-row">
-                <span>Posts: ${targetUserPosts.length}</span>
-                <span>Likes: ${user.likesReceived || 0}</span>
-                <span>Followers: ${user.followers.length}</span>
-            </div>
-
-            <div style="display:flex; gap:10px; justify-content:center; margin-bottom:25px;">
-                <button class="action-btn-styled" style="background:${followBtnColor};" onclick="toggleFollowUser('${user.username}')">${followBtnText}</button>
-                <button class="action-btn-styled" style="background:#4b5563;" onclick="showForYouPage()">Back to Feed</button>
-            </div>
-
-            <h3 style="margin-top: 30px; text-align: left; border-bottom: 1px solid #e2e8f0; padding-bottom:8px;">Shared Media</h3>
-            <div class="profile-posts-grid" id="targetProfileGridContainer"></div>
-        </div>
-    `;
-
-    const targetGrid = document.getElementById("targetProfileGridContainer");
-    if (targetUserPosts.length === 0) {
-        targetGrid.innerHTML = "<p style='color:#888; grid-column: 1/-1; padding:20px;'>No visible shared media entries found.</p>";
-    } else {
-        targetUserPosts.forEach(post => {
-            if (post.type === "video") {
-                targetGrid.innerHTML += `<video class="grid-media-item" src="${post.media}" muted preload="metadata"></video>`;
-            } else {
-                targetGrid.innerHTML += `<img class="grid-media-item" src="${post.media}" alt="Grid Asset">`;
-            }
-        });
-    }
-}
-
-function toggleFollowUser(targetUsername) {
-    let localUsers = getUsers();
-    
-    const targetUser = localUsers.find(u => u.username.toLowerCase() === targetUsername.toLowerCase());
-    const me = localUsers.find(u => u.username.toLowerCase() === currentUser.username.toLowerCase());
-
-    if (!targetUser || !me) return;
-
-    if (!targetUser.followers) targetUser.followers = [];
-    if (!me.following) me.following = [];
-
-    const followerIndex = targetUser.followers.findIndex(x => x.toLowerCase() === currentUser.username.toLowerCase());
-
-    if (followerIndex === -1) {
-        targetUser.followers.push(me.username);
-        me.following.push(targetUser.username);
-    } else {
-        targetUser.followers.splice(followerIndex, 1);
-        me.following = me.following.filter(x => x.toLowerCase() !== targetUser.username.toLowerCase());
-    }
-
-    localStorage.setItem("snapio_users", JSON.stringify(localUsers));
-    showTargetUserProfile(targetUser.username);
 }
 </script>
-
 </body>
 </html>
